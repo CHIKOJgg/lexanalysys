@@ -1,1685 +1,649 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ЛексАнализ — AI сравнение НПА</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;600;700&family=Golos+Text:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      :root {
-        --bg: #0a0c12;
-        --bg2: #0f1219;
-        --bg3: #161b26;
-        --bg4: #1c2233;
-        --border: rgba(255, 255, 255, 0.07);
-        --border2: rgba(255, 255, 255, 0.13);
-        --accent: #3b82f6;
-        --accent2: #6366f1;
-        --green: #22c55e;
-        --yellow: #eab308;
-        --red: #ef4444;
-        --text: #e8eaf0;
-        --muted: #6b7280;
-        --fh: 'Unbounded', sans-serif;
-        --fb: 'Golos Text', sans-serif;
-      }
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-      html {
-        scroll-behavior: smooth;
-      }
-      body {
-        background: var(--bg);
-        color: var(--text);
-        font-family: var(--fb);
-        font-size: 15px;
-        line-height: 1.6;
-        min-height: 100vh;
-      }
-      body::before {
-        content: '';
-        position: fixed;
-        inset: 0;
-        background:
-          radial-gradient(
-            ellipse 80% 50% at 20% -10%,
-            rgba(59, 130, 246, 0.07) 0%,
-            transparent 60%
-          ),
-          radial-gradient(
-            ellipse 60% 40% at 80% 110%,
-            rgba(99, 102, 241, 0.05) 0%,
-            transparent 60%
-          );
-        pointer-events: none;
-        z-index: 0;
-      }
-      .wrap {
-        max-width: 1280px;
-        margin: 0 auto;
-        padding: 0 24px;
-        position: relative;
-        z-index: 1;
-      }
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ЛексАнализ — AI сравнение НПА</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;600;700&family=Golos+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0c12;--bg2:#0f1219;--bg3:#161b26;--bg4:#1c2233;--bd:rgba(255,255,255,.07);--bd2:rgba(255,255,255,.13);--ac:#3b82f6;--ac2:#6366f1;--gr:#22c55e;--yw:#eab308;--rd:#ef4444;--tx:#e8eaf0;--mu:#6b7280;--fh:'Unbounded',sans-serif;--fb:'Golos Text',sans-serif}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--tx);font-family:var(--fb);font-size:15px;line-height:1.6;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 20% -10%,rgba(59,130,246,.07) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 80% 110%,rgba(99,102,241,.05) 0%,transparent 60%);pointer-events:none;z-index:0}
+.w{max-width:1280px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
 
-      /* HEADER */
-      header {
-        position: sticky;
-        top: 0;
-        z-index: 100;
-        background: rgba(10, 12, 18, 0.93);
-        backdrop-filter: blur(18px);
-        border-bottom: 1px solid var(--border);
-      }
-      .hdr {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 16px 0;
-      }
-      .logo {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-      .logo-ico {
-        width: 38px;
-        height: 38px;
-        background: linear-gradient(135deg, var(--accent), var(--accent2));
-        border-radius: 9px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-      }
-      .logo-name {
-        font-family: var(--fh);
-        font-size: 18px;
-        font-weight: 700;
-        letter-spacing: -0.5px;
-        background: linear-gradient(90deg, #e8eaf0, #9ca3af);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
-      .logo-sub {
-        font-size: 11px;
-        color: var(--muted);
-        margin-top: -2px;
-      }
-      .hdr-r {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-      .pill {
-        font-size: 10px;
-        font-family: var(--fh);
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        padding: 4px 10px;
-        border-radius: 20px;
-      }
-      .pill-blue {
-        background: rgba(59, 130, 246, 0.1);
-        border: 1px solid rgba(59, 130, 246, 0.3);
-        color: var(--accent);
-      }
-      .pill-green {
-        background: rgba(34, 197, 94, 0.1);
-        border: 1px solid rgba(34, 197, 94, 0.3);
-        color: var(--green);
-      }
-      .pill-yellow {
-        background: rgba(234, 179, 8, 0.1);
-        border: 1px solid rgba(234, 179, 8, 0.3);
-        color: var(--yellow);
-      }
-      .pill-red {
-        background: rgba(239, 68, 68, 0.1);
-        border: 1px solid rgba(239, 68, 68, 0.3);
-        color: var(--red);
-      }
+/* HEADER */
+header{position:sticky;top:0;z-index:100;background:rgba(10,12,18,.94);backdrop-filter:blur(18px);border-bottom:1px solid var(--bd)}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-i{width:38px;height:38px;background:linear-gradient(135deg,var(--ac),var(--ac2));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.logo-n{font-family:var(--fh);font-size:18px;font-weight:700;letter-spacing:-.5px;background:linear-gradient(90deg,#e8eaf0,#9ca3af);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo-s{font-size:11px;color:var(--mu);margin-top:-2px}
+.hdr-r{display:flex;align-items:center;gap:10px}
+.pill{font-size:10px;font-family:var(--fh);font-weight:600;letter-spacing:.5px;padding:4px 10px;border-radius:20px}
+.p-blue{background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.3);color:var(--ac)}
+.p-green{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:var(--gr)}
+.p-red{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--rd)}
+.p-yellow{background:rgba(234,179,8,.1);border:1px solid rgba(234,179,8,.3);color:var(--yw)}
 
-      /* HERO */
-      .hero {
-        padding: 52px 0 36px;
-        text-align: center;
-      }
-      .hero h1 {
-        font-family: var(--fh);
-        font-size: clamp(20px, 3.5vw, 38px);
-        font-weight: 700;
-        letter-spacing: -1.5px;
-        line-height: 1.1;
-        margin-bottom: 12px;
-      }
-      .hero h1 span {
-        background: linear-gradient(90deg, var(--accent), var(--accent2));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
-      .hero p {
-        color: var(--muted);
-        font-size: 15px;
-        max-width: 520px;
-        margin: 0 auto 24px;
-      }
-      .chips {
-        display: flex;
-        gap: 8px;
-        justify-content: center;
-        flex-wrap: wrap;
-      }
-      .chip {
-        font-size: 12px;
-        padding: 4px 12px;
-        border-radius: 20px;
-        background: var(--bg3);
-        border: 1px solid var(--border2);
-        color: var(--muted);
-      }
+/* HERO */
+.hero{padding:48px 0 32px;text-align:center}
+.hero h1{font-family:var(--fh);font-size:clamp(20px,3.5vw,38px);font-weight:700;letter-spacing:-1.5px;line-height:1.1;margin-bottom:12px}
+.hero h1 span{background:linear-gradient(90deg,var(--ac),var(--ac2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:var(--mu);font-size:15px;max-width:520px;margin:0 auto 20px}
+.chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.chip{font-size:12px;padding:4px 12px;border-radius:20px;background:var(--bg3);border:1px solid var(--bd2);color:var(--mu)}
 
-      /* CARD */
-      .card {
-        background: var(--bg3);
-        border: 1px solid var(--border2);
-        border-radius: 14px;
-        padding: 20px 24px;
-        margin-bottom: 18px;
-      }
-      .card-title {
-        font-family: var(--fh);
-        font-size: 11px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: var(--muted);
-        margin-bottom: 14px;
-      }
+/* CARD */
+.card{background:var(--bg3);border:1px solid var(--bd2);border-radius:14px;padding:20px 24px;margin-bottom:18px}
+.card-t{font-family:var(--fh);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--mu);margin-bottom:14px}
 
-      /* SETTINGS GRID */
-      .settings-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 14px;
-      }
-      @media (max-width: 768px) {
-        .settings-grid {
-          grid-template-columns: 1fr;
-        }
-      }
-      .field label {
-        display: block;
-        font-size: 12px;
-        color: var(--muted);
-        margin-bottom: 5px;
-      }
-      .field input,
-      .field select {
-        width: 100%;
-        padding: 9px 12px;
-        background: var(--bg);
-        border: 1px solid var(--border2);
-        border-radius: 8px;
-        color: var(--text);
-        font-family: var(--fb);
-        font-size: 13px;
-        transition: border-color 0.2s;
-        outline: none;
-      }
-      .field input:focus,
-      .field select:focus {
-        border-color: var(--accent);
-      }
-      .field input[type='password'] {
-        letter-spacing: 2px;
-      }
-      .field input[type='password']::placeholder {
-        letter-spacing: 0;
-      }
+/* GRID */
+.sg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+@media(max-width:768px){.sg{grid-template-columns:1fr}}
+.f label{display:block;font-size:12px;color:var(--mu);margin-bottom:5px}
+.f input,.f select{width:100%;padding:9px 12px;background:var(--bg);border:1px solid var(--bd2);border-radius:8px;color:var(--tx);font-family:var(--fb);font-size:13px;transition:border-color .2s;outline:none}
+.f input:focus,.f select:focus{border-color:var(--ac)}
+.f input[type=password]{letter-spacing:2px}
+.f input[type=password]::placeholder{letter-spacing:0}
+.f-note{font-size:11px;color:var(--mu);margin-top:5px}
+.f-note a{color:var(--ac);text-decoration:none}
 
-      /* UPLOAD GRID */
-      .upload-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 18px;
-        margin-bottom: 18px;
-      }
-      @media (max-width: 600px) {
-        .upload-grid {
-          grid-template-columns: 1fr;
-        }
-      }
-      .upl-card {
-        background: var(--bg3);
-        border: 1.5px dashed var(--border2);
-        border-radius: 16px;
-        padding: 28px 20px;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.25s;
-        position: relative;
-        overflow: hidden;
-      }
-      .upl-card:hover,
-      .upl-card.drag {
-        border-color: var(--accent);
-        background: rgba(59, 130, 246, 0.04);
-        transform: translateY(-2px);
-      }
-      .upl-card.loaded {
-        border-style: solid;
-        border-color: rgba(59, 130, 246, 0.4);
-      }
-      .upl-card.err-card {
-        border-color: rgba(239, 68, 68, 0.4);
-      }
-      .upl-card input[type='file'] {
-        position: absolute;
-        inset: 0;
-        opacity: 0;
-        cursor: pointer;
-      }
-      .upl-ico {
-        font-size: 28px;
-        margin-bottom: 8px;
-      }
-      .upl-lbl {
-        font-family: var(--fh);
-        font-size: 11px;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-        margin-bottom: 4px;
-        color: var(--accent);
-      }
-      .upl-hint {
-        font-size: 12px;
-        color: var(--muted);
-      }
-      .upl-fname {
-        margin-top: 8px;
-        font-size: 12px;
-        font-weight: 500;
-        word-break: break-all;
-      }
-      .upl-fname.ok {
-        color: var(--green);
-      }
-      .upl-fname.fail {
-        color: var(--red);
-      }
-      .upl-meta {
-        font-size: 11px;
-        color: var(--muted);
-        margin-top: 3px;
-      }
+/* MODEL INFO */
+.model-free-badge{display:inline-block;font-size:10px;font-family:var(--fh);font-weight:600;padding:2px 7px;border-radius:4px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);color:var(--gr);margin-left:6px;vertical-align:middle}
 
-      /* BUTTON */
-      .btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        width: 100%;
-        padding: 15px;
-        font-family: var(--fh);
-        font-size: 13px;
-        font-weight: 700;
-        letter-spacing: 0.5px;
-        color: #fff;
-        background: linear-gradient(135deg, var(--accent), var(--accent2));
-        border: none;
-        border-radius: 12px;
-        cursor: pointer;
-        transition: all 0.25s;
-      }
-      .btn:hover:not(:disabled) {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 28px rgba(59, 130, 246, 0.3);
-      }
-      .btn:disabled {
-        opacity: 0.4;
-        cursor: not-allowed;
-        transform: none;
-      }
-      .spin {
-        width: 16px;
-        height: 16px;
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        border-top-color: #fff;
-        border-radius: 50%;
-        animation: spin 0.7s linear infinite;
-      }
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
+/* UPLOAD */
+.ug{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+@media(max-width:600px){.ug{grid-template-columns:1fr}}
+.uc{background:var(--bg3);border:1.5px dashed var(--bd2);border-radius:16px;padding:28px 20px;text-align:center;cursor:pointer;transition:all .25s;position:relative;overflow:hidden}
+.uc:hover,.uc.drag{border-color:var(--ac);background:rgba(59,130,246,.04);transform:translateY(-2px)}
+.uc.loaded{border-style:solid;border-color:rgba(59,130,246,.4)}
+.uc.fail{border-color:rgba(239,68,68,.4)}
+.uc input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.ui{font-size:28px;margin-bottom:8px}
+.ul{font-family:var(--fh);font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px;color:var(--ac)}
+.uh{font-size:12px;color:var(--mu)}
+.uf{margin-top:8px;font-size:12px;font-weight:500;word-break:break-all}
+.uf.ok{color:var(--gr)}.uf.err{color:var(--rd)}
+.um{font-size:11px;color:var(--mu);margin-top:3px}
 
-      /* PROGRESS */
-      .progress-section {
-        margin-top: 18px;
-      }
-      .prog-header {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 6px;
-      }
-      .prog-lbl {
-        font-size: 12px;
-        color: var(--muted);
-      }
-      .prog-pct {
-        font-family: var(--fh);
-        font-size: 12px;
-        font-weight: 600;
-        color: var(--accent);
-      }
-      .prog-bar {
-        height: 4px;
-        background: var(--bg3);
-        border-radius: 2px;
-        overflow: hidden;
-        margin-bottom: 12px;
-      }
-      .prog-fill {
-        height: 100%;
-        background: linear-gradient(90deg, var(--accent), var(--accent2));
-        border-radius: 2px;
-        transition: width 0.4s ease;
-        width: 0%;
-      }
-      .log-box {
-        background: var(--bg3);
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 12px 14px;
-        max-height: 150px;
-        overflow-y: auto;
-      }
-      .log-line {
-        font-size: 12px;
-        color: var(--muted);
-        padding: 2px 0;
-        display: flex;
-        gap: 8px;
-        align-items: center;
-        animation: fu 0.3s ease;
-      }
-      @keyframes fu {
-        from {
-          opacity: 0;
-          transform: translateY(3px);
-        }
-        to {
-          opacity: 1;
-        }
-      }
-      .log-dot {
-        width: 5px;
-        height: 5px;
-        border-radius: 50%;
-        background: var(--accent);
-        flex-shrink: 0;
-      }
-      .log-line.ok .log-dot {
-        background: var(--green);
-      }
-      .log-line.err .log-dot {
-        background: var(--red);
-      }
+/* BUTTON */
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:15px;font-family:var(--fh);font-size:13px;font-weight:700;letter-spacing:.5px;color:#fff;background:linear-gradient(135deg,var(--ac),var(--ac2));border:none;border-radius:12px;cursor:pointer;transition:all .25s}
+.btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 28px rgba(59,130,246,.3)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.sp{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-      /* ERROR BOX */
-      .err-box {
-        background: rgba(239, 68, 68, 0.08);
-        border: 1px solid rgba(239, 68, 68, 0.2);
-        border-radius: 10px;
-        padding: 13px 16px;
-        color: #fca5a5;
-        font-size: 13px;
-        margin-top: 14px;
-      }
+/* PROGRESS */
+.prog-sec{margin-top:18px}
+.prog-hdr{display:flex;justify-content:space-between;margin-bottom:6px}
+.prog-lbl{font-size:12px;color:var(--mu)}
+.prog-pct{font-family:var(--fh);font-size:12px;font-weight:600;color:var(--ac)}
+.prog-bar{height:4px;background:var(--bg3);border-radius:2px;overflow:hidden;margin-bottom:12px}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--ac),var(--ac2));border-radius:2px;transition:width .5s ease;width:0%}
+.log{background:var(--bg3);border:1px solid var(--bd);border-radius:10px;padding:12px 14px;max-height:160px;overflow-y:auto;font-size:12px}
+.ll{color:var(--mu);padding:2px 0;display:flex;gap:8px;align-items:flex-start;animation:fu .3s ease}
+@keyframes fu{from{opacity:0;transform:translateY(3px)}to{opacity:1}}
+.ld{width:5px;height:5px;border-radius:50%;background:var(--ac);flex-shrink:0;margin-top:5px}
+.ll.ok .ld{background:var(--gr)}.ll.err .ld{background:var(--rd)}.ll.warn .ld{background:var(--yw)}
 
-      /* RESULTS */
-      #results {
-        display: none;
-        padding: 28px 0 80px;
-      }
-      #results.show {
-        display: block;
-      }
-      .res-top {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 22px;
-        flex-wrap: wrap;
-        gap: 12px;
-      }
-      .res-title {
-        font-family: var(--fh);
-        font-size: 20px;
-        font-weight: 700;
-      }
-      .btn-sm {
-        padding: 8px 16px;
-        font-family: var(--fh);
-        font-size: 11px;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        color: var(--text);
-        background: var(--bg3);
-        border: 1px solid var(--border2);
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-      .btn-sm:hover {
-        border-color: var(--accent);
-        color: var(--accent);
-      }
+/* CHUNK PROGRESS DOTS */
+.chunk-dots{display:flex;gap:5px;flex-wrap:wrap;margin-top:10px}
+.cdot{width:12px;height:12px;border-radius:3px;background:var(--bg4);border:1px solid var(--bd2);transition:all .3s;flex-shrink:0}
+.cdot.skip{background:var(--bg4);border-color:var(--bd)}
+.cdot.cache{background:rgba(59,130,246,.3);border-color:var(--ac)}
+.cdot.sending{background:rgba(234,179,8,.2);border-color:var(--yw);animation:pulse .8s ease infinite}
+.cdot.done{background:var(--gr);border-color:var(--gr)}
+.cdot.err{background:var(--rd);border-color:var(--rd)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-      /* STATS */
-      .stats-row {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 12px;
-        margin-bottom: 18px;
-      }
-      @media (max-width: 600px) {
-        .stats-row {
-          grid-template-columns: repeat(2, 1fr);
-        }
-      }
-      .stat {
-        background: var(--bg3);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 16px 18px;
-      }
-      .stat-v {
-        font-family: var(--fh);
-        font-size: 28px;
-        font-weight: 700;
-      }
-      .stat-l {
-        font-size: 12px;
-        color: var(--muted);
-        margin-top: 2px;
-      }
-      .stat.blue .stat-v {
-        color: var(--accent);
-      }
-      .stat.green .stat-v {
-        color: var(--green);
-      }
-      .stat.yellow .stat-v {
-        color: var(--yellow);
-      }
-      .stat.red .stat-v {
-        color: var(--red);
-      }
+/* ERR */
+.err-box{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:13px 16px;color:#fca5a5;font-size:13px;margin-top:14px}
 
-      /* META */
-      .meta-bar {
-        display: flex;
-        gap: 16px;
-        flex-wrap: wrap;
-        font-size: 12px;
-        color: var(--muted);
-        margin-bottom: 18px;
-        padding: 12px 16px;
-        background: var(--bg3);
-        border-radius: 10px;
-        border: 1px solid var(--border);
-      }
-      .meta-val {
-        color: var(--text);
-        font-weight: 500;
-      }
+/* RESULTS */
+#results{display:none;padding:28px 0 80px}
+#results.show{display:block}
+.res-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:12px}
+.res-title{font-family:var(--fh);font-size:20px;font-weight:700}
+.btn-sm{padding:8px 16px;font-family:var(--fh);font-size:11px;font-weight:600;letter-spacing:.5px;color:var(--tx);background:var(--bg3);border:1px solid var(--bd2);border-radius:8px;cursor:pointer;transition:all .2s}
+.btn-sm:hover{border-color:var(--ac);color:var(--ac)}
 
-      /* SUMMARY */
-      .summary {
-        background: var(--bg3);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 20px 24px;
-        margin-bottom: 20px;
-      }
-      .summary h3 {
-        font-family: var(--fh);
-        font-size: 11px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: var(--accent);
-        margin-bottom: 10px;
-      }
-      .summary p {
-        font-size: 14px;
-        color: #c4c8d4;
-        line-height: 1.7;
-      }
-      .key-risks {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-top: 10px;
-      }
-      .risk-chip {
-        font-size: 11px;
-        padding: 4px 12px;
-        background: rgba(239, 68, 68, 0.08);
-        border: 1px solid rgba(239, 68, 68, 0.2);
-        color: #fca5a5;
-        border-radius: 20px;
-      }
+/* STATS */
+.sr{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+@media(max-width:600px){.sr{grid-template-columns:repeat(2,1fr)}}
+.sc{background:var(--bg3);border:1px solid var(--bd);border-radius:12px;padding:16px 18px}
+.sv{font-family:var(--fh);font-size:28px;font-weight:700}
+.sl{font-size:12px;color:var(--mu);margin-top:2px}
+.sc.blue .sv{color:var(--ac)}.sc.green .sv{color:var(--gr)}.sc.yellow .sv{color:var(--yw)}.sc.red .sv{color:var(--rd)}
 
-      /* TABS */
-      .tab-nav {
-        display: flex;
-        gap: 3px;
-        background: var(--bg3);
-        border-radius: 10px;
-        padding: 4px;
-        margin-bottom: 20px;
-        width: fit-content;
-        flex-wrap: wrap;
-      }
-      .tab-btn {
-        padding: 7px 15px;
-        font-family: var(--fh);
-        font-size: 11px;
-        font-weight: 600;
-        letter-spacing: 0.3px;
-        border: none;
-        border-radius: 7px;
-        cursor: pointer;
-        background: transparent;
-        color: var(--muted);
-        transition: all 0.2s;
-      }
-      .tab-btn.active {
-        background: var(--bg);
-        color: var(--text);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-      .tab-pane {
-        display: none;
-      }
-      .tab-pane.active {
-        display: block;
-      }
+/* META */
+.meta{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--mu);margin-bottom:18px;padding:12px 16px;background:var(--bg3);border-radius:10px;border:1px solid var(--bd)}
+.mv{color:var(--tx);font-weight:500}
 
-      /* TABLE */
-      .tbl-wrap {
-        overflow-x: auto;
-      }
-      .tbl {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 13px;
-      }
-      .tbl th {
-        text-align: left;
-        padding: 10px 14px;
-        background: var(--bg3);
-        color: var(--muted);
-        font-family: var(--fh);
-        font-size: 10px;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-        border-bottom: 1px solid var(--border);
-        white-space: nowrap;
-      }
-      .tbl td {
-        padding: 11px 14px;
-        border-bottom: 1px solid var(--border);
-        vertical-align: top;
-        line-height: 1.5;
-      }
-      .tbl tr:hover td {
-        background: rgba(255, 255, 255, 0.015);
-      }
-      .tbl tr:last-child td {
-        border-bottom: none;
-      }
-      .old-t {
-        color: #f87171;
-        font-size: 12px;
-      }
-      .new-t {
-        color: #4ade80;
-        font-size: 12px;
-        margin-top: 3px;
-      }
-      .clause-tag {
-        font-size: 11px;
-        color: var(--accent);
-        font-family: var(--fh);
-        font-weight: 600;
-      }
-      .rbadge {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        padding: 3px 10px;
-        border-radius: 20px;
-        font-size: 11px;
-        font-weight: 600;
-        white-space: nowrap;
-      }
-      .rbadge.green {
-        background: rgba(34, 197, 94, 0.12);
-        color: var(--green);
-      }
-      .rbadge.yellow {
-        background: rgba(234, 179, 8, 0.12);
-        color: var(--yellow);
-      }
-      .rbadge.red {
-        background: rgba(239, 68, 68, 0.12);
-        color: var(--red);
-      }
-      .rdot {
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: currentColor;
-      }
-      .ct-badge {
-        font-size: 10px;
-        padding: 2px 8px;
-        border-radius: 4px;
-        background: var(--bg4);
-        color: var(--muted);
-        font-family: var(--fh);
-        font-weight: 600;
-      }
-      .rec {
-        font-size: 12px;
-        color: #c4c8d4;
-      }
+/* SUMMARY */
+.sum{background:var(--bg3);border:1px solid var(--bd);border-radius:12px;padding:20px 24px;margin-bottom:20px}
+.sum h3{font-family:var(--fh);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--ac);margin-bottom:10px}
+.sum p{font-size:14px;color:#c4c8d4;line-height:1.7}
+.risks{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.rc{font-size:11px;padding:4px 12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#fca5a5;border-radius:20px}
 
-      /* RED ZONES */
-      .rz-card {
-        background: var(--bg3);
-        border: 1px solid rgba(239, 68, 68, 0.2);
-        border-left: 3px solid var(--red);
-        border-radius: 12px;
-        padding: 16px 20px;
-        margin-bottom: 12px;
-      }
-      .rz-clause {
-        font-family: var(--fh);
-        font-size: 12px;
-        font-weight: 600;
-        color: var(--red);
-        margin-bottom: 5px;
-      }
-      .rz-desc {
-        font-size: 13px;
-        color: #c4c8d4;
-        line-height: 1.6;
-      }
-      .rz-ref {
-        font-size: 12px;
-        color: var(--accent);
-        margin-top: 6px;
-        font-style: italic;
-      }
+/* TABS */
+.tn{display:flex;gap:3px;background:var(--bg3);border-radius:10px;padding:4px;margin-bottom:20px;width:fit-content;flex-wrap:wrap}
+.tb{padding:7px 15px;font-family:var(--fh);font-size:11px;font-weight:600;letter-spacing:.3px;border:none;border-radius:7px;cursor:pointer;background:transparent;color:var(--mu);transition:all .2s}
+.tb.active{background:var(--bg);color:var(--tx);box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.tp{display:none}.tp.active{display:block}
 
-      /* TRACK */
-      .track-wrap {
-        background: var(--bg3);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        overflow: hidden;
-      }
-      .track-hdr {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        border-bottom: 1px solid var(--border);
-      }
-      .track-ch {
-        padding: 11px 18px;
-        font-family: var(--fh);
-        font-size: 11px;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-        color: var(--muted);
-      }
-      .track-ch:first-child {
-        border-right: 1px solid var(--border);
-      }
-      .track-scroll {
-        max-height: 520px;
-        overflow-y: auto;
-      }
-      .track-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        border-bottom: 1px solid var(--border);
-      }
-      .track-row:last-child {
-        border-bottom: none;
-      }
-      .track-row:hover {
-        background: rgba(255, 255, 255, 0.01);
-      }
-      .track-cell {
-        padding: 12px 18px;
-        font-size: 12px;
-        line-height: 1.6;
-        color: #c4c8d4;
-      }
-      .track-cell:first-child {
-        border-right: 1px solid var(--border);
-      }
-      .track-row.changed .track-cell.old {
-        background: rgba(239, 68, 68, 0.05);
-      }
-      .track-row.changed .track-cell.new {
-        background: rgba(34, 197, 94, 0.05);
-      }
-      .track-mini-lbl {
-        font-family: var(--fh);
-        font-size: 9px;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        color: var(--muted);
-        margin-bottom: 4px;
-        text-transform: uppercase;
-      }
+/* TABLE */
+.tw{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;padding:10px 14px;background:var(--bg3);color:var(--mu);font-family:var(--fh);font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;border-bottom:1px solid var(--bd);white-space:nowrap}
+.tbl td{padding:11px 14px;border-bottom:1px solid var(--bd);vertical-align:top;line-height:1.5}
+.tbl tr:hover td{background:rgba(255,255,255,.015)}
+.tbl tr:last-child td{border-bottom:none}
+.ot{color:#f87171;font-size:12px}.nt{color:#4ade80;font-size:12px;margin-top:3px}
+.ct{font-size:11px;color:var(--ac);font-family:var(--fh);font-weight:600}
+.rb{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
+.rb.green{background:rgba(34,197,94,.12);color:var(--gr)}.rb.yellow{background:rgba(234,179,8,.12);color:var(--yw)}.rb.red{background:rgba(239,68,68,.12);color:var(--rd)}
+.rd{width:6px;height:6px;border-radius:50%;background:currentColor}
+.ctb{font-size:10px;padding:2px 8px;border-radius:4px;background:var(--bg4);color:var(--mu);font-family:var(--fh);font-weight:600}
+.rec{font-size:12px;color:#c4c8d4}
 
-      /* HIERARCHY */
-      .hier-list {
-        list-style: none;
-      }
-      .hier-item {
-        display: flex;
-        align-items: flex-start;
-        gap: 14px;
-        padding: 13px 0;
-        border-bottom: 1px solid var(--border);
-      }
-      .hier-item:last-child {
-        border-bottom: none;
-      }
-      .hier-num {
-        width: 28px;
-        height: 28px;
-        flex-shrink: 0;
-        border-radius: 50%;
-        background: var(--bg3);
-        border: 1px solid var(--border2);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: var(--fh);
-        font-size: 10px;
-        font-weight: 700;
-        color: var(--muted);
-      }
-      .hier-body {
-        flex: 1;
-      }
-      .hier-name {
-        font-size: 14px;
-        font-weight: 500;
-      }
-      .hier-note {
-        font-size: 12px;
-        color: var(--muted);
-        margin-top: 3px;
-      }
-      .hier-status {
-        flex-shrink: 0;
-      }
-      .spill {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        padding: 4px 11px;
-        border-radius: 20px;
-        font-size: 11px;
-        font-weight: 600;
-        font-family: var(--fh);
-        border: 1px solid currentColor;
-      }
-      .spill.compliant {
-        color: var(--green);
-      }
-      .spill.warning {
-        color: var(--yellow);
-      }
-      .spill.violation {
-        color: var(--red);
-      }
-      .spill.not_applicable {
-        color: var(--muted);
-      }
+/* RED ZONES */
+.rzc{background:var(--bg3);border:1px solid rgba(239,68,68,.2);border-left:3px solid var(--rd);border-radius:12px;padding:16px 20px;margin-bottom:12px}
+.rzl{font-family:var(--fh);font-size:12px;font-weight:600;color:var(--rd);margin-bottom:5px}
+.rzd{font-size:13px;color:#c4c8d4;line-height:1.6}
+.rzr{font-size:12px;color:var(--ac);margin-top:6px;font-style:italic}
 
-      /* CHUNKS */
-      .chunks-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-        gap: 12px;
-      }
-      .chunk-card {
-        background: var(--bg3);
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 14px 16px;
-      }
-      .chunk-card.changed {
-        border-color: rgba(234, 179, 8, 0.3);
-      }
-      .chunk-card.skipped {
-        opacity: 0.5;
-      }
-      .chunk-idx {
-        font-family: var(--fh);
-        font-size: 10px;
-        font-weight: 700;
-        color: var(--accent);
-        margin-bottom: 6px;
-      }
-      .chunk-sum {
-        font-size: 12px;
-        color: #c4c8d4;
-        line-height: 1.5;
-      }
-      .chunk-cnt {
-        font-size: 11px;
-        color: var(--yellow);
-        margin-top: 5px;
-      }
+/* TRACK */
+.trw{background:var(--bg3);border:1px solid var(--bd);border-radius:12px;overflow:hidden}
+.trh{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--bd)}
+.trc{padding:11px 18px;font-family:var(--fh);font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--mu)}
+.trc:first-child{border-right:1px solid var(--bd)}
+.trs{max-height:520px;overflow-y:auto}
+.trr{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--bd)}
+.trr:last-child{border-bottom:none}
+.trr:hover{background:rgba(255,255,255,.01)}
+.trd{padding:12px 18px;font-size:12px;line-height:1.6;color:#c4c8d4}
+.trd:first-child{border-right:1px solid var(--bd)}
+.trr.changed .trd.old{background:rgba(239,68,68,.05)}.trr.changed .trd.new{background:rgba(34,197,94,.05)}
+.tml{font-family:var(--fh);font-size:9px;font-weight:600;letter-spacing:.5px;color:var(--mu);margin-bottom:4px;text-transform:uppercase}
 
-      /* DIVIDER */
-      .divider {
-        height: 1px;
-        background: var(--border);
-        margin: 28px 0;
-      }
-      .empty {
-        text-align: center;
-        padding: 36px;
-        color: var(--muted);
-        font-size: 14px;
-      }
+/* HIERARCHY */
+.hl{list-style:none}
+.hi{display:flex;align-items:flex-start;gap:14px;padding:13px 0;border-bottom:1px solid var(--bd)}
+.hi:last-child{border-bottom:none}
+.hn{width:28px;height:28px;flex-shrink:0;border-radius:50%;background:var(--bg3);border:1px solid var(--bd2);display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:10px;font-weight:700;color:var(--mu)}
+.hb{flex:1}.hname{font-size:14px;font-weight:500}.hnote{font-size:12px;color:var(--mu);margin-top:3px}
+.hst{flex-shrink:0}
+.sp2{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;font-size:11px;font-weight:600;font-family:var(--fh);border:1px solid currentColor}
+.sp2.compliant{color:var(--gr)}.sp2.warning{color:var(--yw)}.sp2.violation{color:var(--rd)}.sp2.not_applicable{color:var(--mu)}
 
-      /* SCROLLBAR */
-      ::-webkit-scrollbar {
-        width: 5px;
-        height: 5px;
-      }
-      ::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: var(--border2);
-        border-radius: 3px;
-      }
-    </style>
-  </head>
-  <body>
-    <header>
-      <div class="wrap">
-        <div class="hdr">
-          <div class="logo">
-            <div class="logo-ico">⚖</div>
-            <div>
-              <div class="logo-name">ЛексАнализ</div>
-              <div class="logo-sub">AI-ассистент сравнения НПА</div>
-            </div>
-          </div>
-          <div class="hdr-r">
-            <span class="pill pill-yellow" id="backend-pill">⬤ Проверка…</span>
-            <span class="pill pill-blue">AI HACKATHON BSUIR 2026</span>
-          </div>
-        </div>
+/* CHUNKS */
+.cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.cc{background:var(--bg3);border:1px solid var(--bd);border-radius:10px;padding:14px 16px}
+.cc.changed{border-color:rgba(234,179,8,.3)}.cc.skipped{opacity:.45}.cc.cached{border-color:rgba(59,130,246,.3)}
+.ci{font-family:var(--fh);font-size:10px;font-weight:700;color:var(--ac);margin-bottom:5px}
+.cs{font-size:12px;color:#c4c8d4;line-height:1.5}
+.cn{font-size:11px;margin-top:5px}
+
+.div{height:1px;background:var(--bd);margin:28px 0}
+.empty{text-align:center;padding:36px;color:var(--mu);font-size:14px}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:3px}
+</style>
+</head>
+<body>
+
+<header><div class="w">
+<div class="hdr">
+  <div class="logo">
+    <div class="logo-i">⚖</div>
+    <div><div class="logo-n">ЛексАнализ</div><div class="logo-s">AI-ассистент сравнения НПА</div></div>
+  </div>
+  <div class="hdr-r">
+    <span class="pill p-yellow" id="bpill">⬤ Проверка…</span>
+    <span class="pill p-blue">BSUIR 2026</span>
+  </div>
+</div>
+</div></header>
+
+<main><div class="w">
+
+<div class="hero">
+  <h1>Сравнение редакций<br><span>нормативных правовых актов</span></h1>
+  <p>Извлекает текст, разбивает на структурированные чанки, фильтрует идентичные (ratio&gt;0.95), отправляет изменённые в LLM</p>
+  <div class="chips">
+    <span class="chip">📄 DOCX / PDF / TXT</span>
+    <span class="chip">⚡ Diff-фильтр ratio&gt;0.95</span>
+    <span class="chip">💾 SHA-256 кэш</span>
+    <span class="chip">🔄 Retry + backoff</span>
+    <span class="chip">⚖ Иерархия НПА РБ</span>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="card">
+  <div class="card-t">⚙ Настройки</div>
+  <div class="sg">
+    <div class="f">
+      <label>OpenRouter API Key</label>
+      <input type="password" id="api-key" placeholder="sk-or-v1-…" autocomplete="off">
+      <div class="f-note">Получить бесплатно: <a href="https://openrouter.ai/keys" target="_blank">openrouter.ai/keys</a></div>
+    </div>
+    <div class="f">
+      <label>Модель <span class="model-free-badge">FREE</span></label>
+      <select id="model-sel">
+        <option value="openrouter/free">openrouter/free — авто-роутер ⭐ рекомендуется</option>
+        <option value="deepseek/deepseek-r1-distill-qwen-14b:free">DeepSeek R1 14B :free 🧠</option>
+        <option value="deepseek/deepseek-r1-0528-qwen3-8b:free">DeepSeek R1 8B :free ⚡</option>
+        <option value="meta-llama/llama-3.2-3b-instruct:free">LLaMA 3.2 3B :free</option>
+        <option value="google/gemma-3-4b-it:free">Gemma 3 4B :free</option>
+        <option value="qwen/qwen3-8b:free">Qwen3 8B :free</option>
+        <option value="mistralai/mistral-7b-instruct:free">Mistral 7B :free</option>
+      </select>
+      <div class="f-note">
+        <b>openrouter/free</b> — авто-выбор любой свободной модели.<br>
+        При 429: retry 3→6→12 сек, потом следующая модель.
       </div>
-    </header>
+    </div>
+    <div class="f">
+      <label>Backend URL</label>
+      <input type="text" id="burl" value="http://localhost:8000">
+      <div class="f-note">Запустить: <code style="color:var(--ac)">python backend/server.py</code></div>
+    </div>
+  </div>
+</div>
 
-    <main>
-      <div class="wrap">
-        <!-- HERO -->
-        <div class="hero">
-          <h1>
-            Сравнение редакций<br /><span>нормативных правовых актов</span>
-          </h1>
-          <p>
-            Извлекает содержимое документов, разбивает на структурированные
-            чанки и сравнивает каждый через LLM — выявляет юридически значимые
-            изменения
-          </p>
-          <div class="chips">
-            <span class="chip">📄 DOCX / PDF / TXT</span>
-            <span class="chip">🔍 Структурный chunking</span>
-            <span class="chip">⚡ Diff-фильтрация &gt;95%</span>
-            <span class="chip">💾 LLM-кэш</span>
-            <span class="chip">⚖ Иерархия НПА РБ</span>
-            <span class="chip">🔴 Красные зоны</span>
-          </div>
-        </div>
+<!-- UPLOAD -->
+<div class="ug">
+  <div class="uc" id="card-old" ondragover="dov(event,'old')" ondragleave="dlv('old')" ondrop="ddp(event,'old')">
+    <input type="file" accept=".docx,.pdf,.txt" onchange="onf('old',this)">
+    <div class="ui">📄</div>
+    <div class="ul">Старая редакция</div>
+    <div class="uh">Перетащите или кликните · .docx .pdf .txt</div>
+    <div class="uf" id="fn-old"></div>
+    <div class="um" id="fm-old"></div>
+  </div>
+  <div class="uc" id="card-new" ondragover="dov(event,'new')" ondragleave="dlv('new')" ondrop="ddp(event,'new')">
+    <input type="file" accept=".docx,.pdf,.txt" onchange="onf('new',this)">
+    <div class="ui">📋</div>
+    <div class="ul">Новая редакция</div>
+    <div class="uh">Перетащите или кликните · .docx .pdf .txt</div>
+    <div class="uf" id="fn-new"></div>
+    <div class="um" id="fm-new"></div>
+  </div>
+</div>
 
-        <!-- SETTINGS -->
-        <div class="card">
-          <div class="card-title">⚙ Настройки</div>
-          <div class="settings-grid">
-            <div class="field">
-              <label>OpenRouter API Key</label>
-              <input
-                type="password"
-                id="api-key"
-                placeholder="sk-or-v1-…"
-                autocomplete="off"
-              />
-            </div>
-            <div class="field">
-              <label>Модель (бесплатные)</label>
-              <select id="model-sel">
-                <option value="">Auto (mistral-7b → llama-3-8b)</option>
-                <option value="mistralai/mistral-7b-instruct">
-                  Mistral 7B Instruct ⭐
-                </option>
-                <option value="meta-llama/llama-3-8b-instruct">
-                  LLaMA 3 8B Instruct
-                </option>
-              </select>
-            </div>
-            <div class="field">
-              <label>Backend URL</label>
-              <input
-                type="text"
-                id="backend-url"
-                value="http://localhost:8000"
-              />
-            </div>
-          </div>
-        </div>
+<button class="btn" id="btn-run" onclick="run()" disabled>Анализировать</button>
 
-        <!-- UPLOAD -->
-        <div class="upload-grid">
-          <div
-            class="upl-card"
-            id="card-old"
-            ondragover="dragOver(event, 'old')"
-            ondragleave="dragLeave('old')"
-            ondrop="drop(event, 'old')"
-          >
-            <input
-              type="file"
-              accept=".docx,.pdf,.txt"
-              onchange="onFile('old', this)"
-            />
-            <div class="upl-ico">📄</div>
-            <div class="upl-lbl">Старая редакция</div>
-            <div class="upl-hint">
-              Перетащите или кликните · .docx .pdf .txt
-            </div>
-            <div class="upl-fname" id="fname-old"></div>
-            <div class="upl-meta" id="fmeta-old"></div>
-          </div>
-          <div
-            class="upl-card"
-            id="card-new"
-            ondragover="dragOver(event, 'new')"
-            ondragleave="dragLeave('new')"
-            ondrop="drop(event, 'new')"
-          >
-            <input
-              type="file"
-              accept=".docx,.pdf,.txt"
-              onchange="onFile('new', this)"
-            />
-            <div class="upl-ico">📋</div>
-            <div class="upl-lbl">Новая редакция</div>
-            <div class="upl-hint">
-              Перетащите или кликните · .docx .pdf .txt
-            </div>
-            <div class="upl-fname" id="fname-new"></div>
-            <div class="upl-meta" id="fmeta-new"></div>
-          </div>
-        </div>
+<!-- PROGRESS -->
+<div class="prog-sec" id="prog" style="display:none">
+  <div class="prog-hdr">
+    <span class="prog-lbl" id="plbl">Подготовка…</span>
+    <span class="prog-pct" id="ppct">0%</span>
+  </div>
+  <div class="prog-bar"><div class="prog-fill" id="pfill"></div></div>
+  <div class="log" id="log"></div>
+  <div class="chunk-dots" id="cdots"></div>
+</div>
 
-        <button class="btn" id="btn-run" onclick="run()" disabled>
-          Анализировать
-        </button>
+<div class="err-box" id="errbox" style="display:none"></div>
 
-        <!-- PROGRESS -->
-        <div class="progress-section" id="prog" style="display: none">
-          <div class="prog-header">
-            <span class="prog-lbl" id="prog-lbl">Подготовка…</span>
-            <span class="prog-pct" id="prog-pct">0%</span>
-          </div>
-          <div class="prog-bar">
-            <div class="prog-fill" id="prog-fill"></div>
-          </div>
-          <div class="log-box" id="log-box"></div>
-        </div>
+<!-- RESULTS -->
+<div id="results">
+<div class="div"></div>
+<div class="res-top">
+  <div class="res-title">📊 Результаты анализа</div>
+  <button class="btn-sm" onclick="doExport()">⬇ Экспорт .txt</button>
+</div>
+<div class="sr" id="sr"></div>
+<div class="meta" id="meta"></div>
+<div class="sum" id="sum"></div>
 
-        <div class="err-box" id="err-box" style="display: none"></div>
+<div class="tn">
+  <button class="tb active" data-tab="changes" onclick="stab(this)">Изменения</button>
+  <button class="tb" data-tab="redzones" onclick="stab(this)">🔴 Красные зоны</button>
+  <button class="tb" data-tab="track" onclick="stab(this)">Дорожка</button>
+  <button class="tb" data-tab="hier" onclick="stab(this)">Иерархия НПА</button>
+  <button class="tb" data-tab="chunks" onclick="stab(this)">Фрагменты</button>
+</div>
 
-        <!-- RESULTS -->
-        <div id="results">
-          <div class="divider"></div>
+<div id="p-changes" class="tp active">
+  <div class="tw"><table class="tbl">
+    <thead><tr><th>Пункт</th><th>Было</th><th>Стало</th><th>Тип</th><th>Статья НПА</th><th>Риск</th><th>Рекомендация</th></tr></thead>
+    <tbody id="ctbody"></tbody>
+  </table></div>
+</div>
 
-          <div class="res-top">
-            <div class="res-title">📊 Результаты анализа</div>
-            <button class="btn-sm" onclick="exportTxt()">⬇ Экспорт .txt</button>
-          </div>
+<div id="p-redzones" class="tp"><div id="rzwrap"></div></div>
 
-          <div class="stats-row" id="stats-row"></div>
-          <div class="meta-bar" id="meta-bar"></div>
-          <div class="summary" id="summary-card"></div>
+<div id="p-track" class="tp">
+  <div class="trw">
+    <div class="trh"><div class="trc">Старая редакция</div><div class="trc">Новая редакция</div></div>
+    <div class="trs" id="trscroll"></div>
+  </div>
+</div>
 
-          <div class="tab-nav">
-            <button
-              class="tab-btn active"
-              data-tab="changes"
-              onclick="switchTab(this)"
-            >
-              Изменения
-            </button>
-            <button
-              class="tab-btn"
-              data-tab="redzones"
-              onclick="switchTab(this)"
-            >
-              🔴 Красные зоны
-            </button>
-            <button class="tab-btn" data-tab="track" onclick="switchTab(this)">
-              Дорожка
-            </button>
-            <button
-              class="tab-btn"
-              data-tab="hierarchy"
-              onclick="switchTab(this)"
-            >
-              Иерархия НПА
-            </button>
-            <button class="tab-btn" data-tab="chunks" onclick="switchTab(this)">
-              Фрагменты
-            </button>
-          </div>
+<div id="p-hier" class="tp">
+  <div class="sum" style="margin-bottom:18px">
+    <h3>Иерархия законодательства Республики Беларусь</h3>
+    <p>Проверка соответствия новой редакции нормам вышестоящих актов</p>
+  </div>
+  <ul class="hl" id="hlist"></ul>
+</div>
 
-          <div id="pane-changes" class="tab-pane active">
-            <div class="tbl-wrap">
-              <table class="tbl">
-                <thead>
-                  <tr>
-                    <th>Пункт</th>
-                    <th>Было</th>
-                    <th>Стало</th>
-                    <th>Тип</th>
-                    <th>Статья НПА</th>
-                    <th>Риск</th>
-                    <th>Рекомендация</th>
-                  </tr>
-                </thead>
-                <tbody id="changes-tbody"></tbody>
-              </table>
-            </div>
-          </div>
+<div id="p-chunks" class="tp">
+  <div class="sum" style="margin-bottom:16px">
+    <h3>Анализ по фрагментам</h3>
+    <p id="cmeta"></p>
+  </div>
+  <div class="cg" id="cgrid"></div>
+</div>
 
-          <div id="pane-redzones" class="tab-pane">
-            <div id="rz-wrap"></div>
-          </div>
+</div><!-- /results -->
+</div></main>
 
-          <div id="pane-track" class="tab-pane">
-            <div class="track-wrap">
-              <div class="track-hdr">
-                <div class="track-ch">Старая редакция</div>
-                <div class="track-ch">Новая редакция</div>
-              </div>
-              <div class="track-scroll" id="track-scroll"></div>
-            </div>
-          </div>
+<script>
+const HIER = [
+  'Конституция Республики Беларусь','Решения республиканских референдумов',
+  'Законы Республики Беларусь','Декреты и указы Президента Республики Беларусь',
+  'Постановления Совета Министров Республики Беларусь',
+  'НПА Верховного Суда, Генпрокуратуры и органов при Президенте РБ',
+  'НПА министерств и республиканских органов государственного управления',
+  'Решения местных Советов и исполнительных органов',
+  'НПА иных нормотворческих органов (должностных лиц)','Технические НПА',
+];
 
-          <div id="pane-hierarchy" class="tab-pane">
-            <div class="summary" style="margin-bottom: 18px">
-              <h3>Иерархия законодательства Республики Беларусь</h3>
-              <p>
-                Проверка соответствия новой редакции нормам вышестоящих актов по
-                10-уровневой иерархии НПА РБ
-              </p>
-            </div>
-            <ul class="hier-list" id="hier-list"></ul>
-          </div>
+const S = { old: null, new: null, result: null };
 
-          <div id="pane-chunks" class="tab-pane">
-            <div class="summary" style="margin-bottom: 16px">
-              <h3>Анализ по фрагментам</h3>
-              <p id="chunks-meta">
-                Документ разбит на структурированные чанки. Серые —
-                отфильтрованы diff-алгоритмом (ratio &gt; 0.95), жёлтые —
-                отправлены в LLM.
-              </p>
-            </div>
-            <div class="chunks-grid" id="chunks-grid"></div>
-          </div>
-        </div>
-        <!-- /results -->
-      </div>
-    </main>
+// ── Backend ──────────────────────────────────────────────
+function burl() { return document.getElementById('burl').value.trim(); }
 
-    <script>
-      // ══════════════════════════════════════════════════════════
-      //  STATE
-      // ══════════════════════════════════════════════════════════
-      const S = { oldParsed: null, newParsed: null, result: null };
+async function checkBackend() {
+  const p = document.getElementById('bpill');
+  try {
+    const r = await fetch(burl() + '/health', { signal: AbortSignal.timeout(2500) });
+    if (r.ok) { p.textContent='⬤ Бэкенд OK'; p.className='pill p-green'; return; }
+  } catch {}
+  p.textContent='⬤ Бэкенд offline'; p.className='pill p-red';
+}
+checkBackend();
+document.getElementById('burl').addEventListener('change', checkBackend);
 
-      const HIER_LEVELS = [
-        'Конституция Республики Беларусь',
-        'Решения республиканских референдумов',
-        'Законы Республики Беларусь',
-        'Декреты и указы Президента Республики Беларусь',
-        'Постановления Совета Министров Республики Беларусь',
-        'НПА Верховного Суда, Генпрокуратуры и органов при Президенте РБ',
-        'НПА министерств и республиканских органов',
-        'Решения местных Советов и исполнительных органов',
-        'НПА иных нормотворческих органов (должностных лиц)',
-        'Технические НПА',
-      ];
+// ── Drag & drop ──────────────────────────────────────────
+function dov(e,w){e.preventDefault();document.getElementById('card-'+w).classList.add('drag')}
+function dlv(w){document.getElementById('card-'+w).classList.remove('drag')}
+function ddp(e,w){e.preventDefault();dlv(w);const f=e.dataTransfer.files[0];if(f)upf(w,f)}
+function onf(w,i){if(i.files[0])upf(w,i.files[0])}
 
-      // ══════════════════════════════════════════════════════════
-      //  BACKEND CHECK
-      // ══════════════════════════════════════════════════════════
-      function backendUrl() {
-        return document.getElementById('backend-url').value.trim();
-      }
+// ── Upload & parse ───────────────────────────────────────
+async function upf(which, file) {
+  const card=document.getElementById('card-'+which);
+  const fn=document.getElementById('fn-'+which);
+  const fm=document.getElementById('fm-'+which);
+  card.classList.remove('loaded','fail'); fn.className='uf'; fn.textContent='⏳ Парсинг…'; fm.textContent='';
+  const form=new FormData(); form.append('file',file,file.name);
+  try {
+    const r=await fetch(burl()+'/api/parse',{method:'POST',body:form});
+    const d=await r.json();
+    if(!r.ok) throw new Error(d.error||'HTTP '+r.status);
+    if(!d.paragraphs?.length) throw new Error('Текст не извлечён из файла');
+    S[which]=d;
+    card.classList.add('loaded');
+    fn.textContent='✓ '+file.name; fn.className='uf ok';
+    fm.textContent=`${d.char_count.toLocaleString()} симв. · ${d.para_count} абз. · ${d.chunks?.length||0} чанков`;
+  } catch(e) {
+    card.classList.add('fail');
+    fn.textContent='✗ '+e.message; fn.className='uf err';
+    S[which]=null;
+  }
+  chkReady();
+}
 
-      async function checkBackend() {
-        const pill = document.getElementById('backend-pill');
-        try {
-          const r = await fetch(backendUrl() + '/health', {
-            signal: AbortSignal.timeout(2500),
-          });
-          if (r.ok) {
-            pill.textContent = '⬤ Бэкенд OK';
-            pill.className = 'pill pill-green';
-            return true;
-          }
-        } catch {}
-        pill.textContent = '⬤ Бэкенд offline';
-        pill.className = 'pill pill-red';
-        return false;
-      }
-      checkBackend();
+function chkReady(){ document.getElementById('btn-run').disabled=!(S.old&&S.new); }
 
-      document
-        .getElementById('backend-url')
-        .addEventListener('change', checkBackend);
+// ── Chunk progress dots ──────────────────────────────────
+let dotCount=0;
+function initDots(n){
+  dotCount=n;
+  const el=document.getElementById('cdots');
+  el.innerHTML=Array.from({length:n},(_,i)=>`<div class="cdot" id="dot-${i}" title="Чанк ${i+1}"></div>`).join('');
+}
+function setDot(i,cls){ const d=document.getElementById('dot-'+i); if(d){d.className='cdot '+cls;} }
 
-      // ══════════════════════════════════════════════════════════
-      //  DRAG & DROP
-      // ══════════════════════════════════════════════════════════
-      function dragOver(e, w) {
-        e.preventDefault();
-        document.getElementById('card-' + w).classList.add('drag');
-      }
-      function dragLeave(w) {
-        document.getElementById('card-' + w).classList.remove('drag');
-      }
-      function drop(e, w) {
-        e.preventDefault();
-        dragLeave(w);
-        const f = e.dataTransfer.files[0];
-        if (f) uploadFile(w, f);
-      }
-      function onFile(w, inp) {
-        if (inp.files[0]) uploadFile(w, inp.files[0]);
-      }
+// ── Run ──────────────────────────────────────────────────
+async function run() {
+  const apiKey=document.getElementById('api-key').value.trim();
+  if(!apiKey){showErr('Введите API-ключ OpenRouter');return;}
+  hideErr(); setLoading(true); showProg(true);
+  document.getElementById('results').classList.remove('show');
 
-      // ══════════════════════════════════════════════════════════
-      //  UPLOAD & PARSE via Backend
-      // ══════════════════════════════════════════════════════════
-      async function uploadFile(which, file) {
-        const card = document.getElementById('card-' + which);
-        const fnEl = document.getElementById('fname-' + which);
-        const metaEl = document.getElementById('fmeta-' + which);
+  const model=document.getElementById('model-sel').value||'openrouter/free';
+  const totalChunks=Math.min(Math.max(S.old.chunks?.length||0,S.new.chunks?.length||0),12);
 
-        card.classList.remove('loaded', 'err-card');
-        fnEl.textContent = '⏳ Отправляю на парсинг…';
-        fnEl.className = 'upl-fname';
-        metaEl.textContent = '';
+  initDots(totalChunks);
+  setStep(5,'Отправляю на анализ…');
+  addLog(`Старая: ${S.old.filename} (${S.old.chunks?.length||0} чанков)`);
+  addLog(`Новая:  ${S.new.filename} (${S.new.chunks?.length||0} чанков)`);
+  addLog(`Будет обработано: до ${totalChunks} чанков · задержка 1.5с между LLM-запросами`);
 
-        const form = new FormData();
-        form.append('file', file, file.name);
+  // Simulate dot updates while waiting (backend processes sequentially)
+  let dotIdx=0;
+  const dotTimer=setInterval(()=>{
+    if(dotIdx<totalChunks){
+      // Mark previous as done
+      if(dotIdx>0) setDot(dotIdx-1,'done');
+      setDot(dotIdx,'sending');
+      setStep(5+Math.round(85*dotIdx/totalChunks), `Анализирую чанк ${dotIdx+1}/${totalChunks}…`);
+      dotIdx++;
+    }
+  }, 2000);
 
-        try {
-          const res = await fetch(backendUrl() + '/api/parse', {
-            method: 'POST',
-            body: form,
-          });
-          const data = await res.json();
+  try {
+    const r=await fetch(burl()+'/api/analyze',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({old:S.old,new:S.new,apiKey,model}),
+    });
+    const data=await r.json();
+    clearInterval(dotTimer);
+    if(!r.ok) throw new Error(data.error||'HTTP '+r.status);
 
-          if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-          if (!data.paragraphs?.length)
-            throw new Error('Текст не извлечён из файла');
+    // Mark all dots done
+    for(let i=0;i<totalChunks;i++) setDot(i,'done');
+    setStep(100,'Готово ✓'); addLog('Анализ завершён', 'ok');
+    const m=data.metadata||{};
+    addLog(`Чанков: ${m.chunks_total||0} · LLM: ${m.chunks_sent||0} · Кэш: ${m.cache_hits||0} · Пропущено diff: ${(m.chunks_total||0)-(m.chunks_sent||0)-(m.cache_hits||0)}`,'ok');
+    addLog(`Модель: ${m.model_used||'—'}`,'ok');
 
-          if (which === 'old') S.oldParsed = data;
-          else S.newParsed = data;
+    S.result=data;
+    renderAll(data);
+    document.getElementById('results').classList.add('show');
+    document.getElementById('results').scrollIntoView({behavior:'smooth'});
 
-          card.classList.add('loaded');
-          fnEl.textContent = '✓ ' + file.name;
-          fnEl.className = 'upl-fname ok';
-          metaEl.textContent = `${data.char_count.toLocaleString()} симв. · ${data.para_count} абз. · ${data.chunks?.length || 0} чанков`;
-        } catch (err) {
-          card.classList.add('err-card');
-          fnEl.textContent = '✗ ' + err.message;
-          fnEl.className = 'upl-fname fail';
-          if (which === 'old') S.oldParsed = null;
-          else S.newParsed = null;
-        }
+  } catch(e) {
+    clearInterval(dotTimer);
+    for(let i=0;i<dotCount;i++) setDot(i,'err');
+    showErr(e.message); addLog('Ошибка: '+e.message,'err');
+  } finally {
+    setLoading(false); showProg(false);
+  }
+}
 
-        checkReady();
-      }
+// ── Render ───────────────────────────────────────────────
+function renderAll(r){
+  rStats(r.stats); rMeta(r.metadata); rSum(r.synthesis,r.stats);
+  rChanges(r.changes); rRZ(r.red_zones); rTrack(r.changes);
+  rHier(r.synthesis?.hierarchy_check); rChunks(r.metadata,r.chunk_results);
+}
 
-      function checkReady() {
-        document.getElementById('btn-run').disabled = !(
-          S.oldParsed && S.newParsed
-        );
-      }
+function rStats(s){
+  document.getElementById('sr').innerHTML=`
+    <div class="sc blue"><div class="sv">${s.total_changes}</div><div class="sl">Всего изменений</div></div>
+    <div class="sc green"><div class="sv">${s.green_count}</div><div class="sl">Безопасных</div></div>
+    <div class="sc yellow"><div class="sv">${s.yellow_count}</div><div class="sl">Требуют проверки</div></div>
+    <div class="sc red"><div class="sv">${s.red_count}</div><div class="sl">Противоречий</div></div>`;
+}
 
-      // ══════════════════════════════════════════════════════════
-      //  MAIN: ANALYZE
-      // ══════════════════════════════════════════════════════════
-      async function run() {
-        const apiKey = document.getElementById('api-key').value.trim();
-        if (!apiKey) {
-          showErr('Введите API-ключ OpenRouter');
-          return;
-        }
+function rMeta(m){
+  const skip=(m.chunks_total||0)-(m.chunks_sent||0)-(m.cache_hits||0);
+  document.getElementById('meta').innerHTML=`
+    <span>📄 <span class="mv">${e(m.old_file)}</span> → <span class="mv">${e(m.new_file)}</span></span>
+    <span>📦 Чанков: <span class="mv">${m.chunks_total}</span></span>
+    <span>⚡ Diff-пропущено: <span class="mv">${skip>0?skip:'0'}</span></span>
+    <span>💾 Из кэша: <span class="mv">${m.cache_hits}</span></span>
+    <span>🤖 В LLM: <span class="mv">${m.chunks_sent}</span></span>
+    <span>🏷 Модель: <span class="mv">${e(m.model_used||'—')}</span></span>`;
+}
 
-        hideErr();
-        setLoading(true);
-        showProg(true);
-        document.getElementById('results').classList.remove('show');
-
-        const model = document.getElementById('model-sel').value || null;
-
-        setStep(10, 'Отправляю запрос на анализ…');
-        addLog('Документы распарсены, отправляю на сравнение');
-        addLog(
-          `Старая: ${S.oldParsed.filename} (${S.oldParsed.chunks?.length || 0} чанков)`,
-        );
-        addLog(
-          `Новая:  ${S.newParsed.filename} (${S.newParsed.chunks?.length || 0} чанков)`,
-        );
-
-        // Simulate progress steps while backend works
-        const steps = [
-          [20, 'Diff-фильтрация чанков (ratio > 0.95)…'],
-          [40, 'Проверка кэша…'],
-          [60, 'Отправка чанков в LLM (OpenRouter)…'],
-          [80, 'Синтез итогового отчёта…'],
-        ];
-        let si = 0;
-        const progTimer = setInterval(() => {
-          if (si < steps.length) {
-            const [p, m] = steps[si++];
-            setStep(p, m);
-            addLog(m);
-          }
-        }, 3000);
-
-        try {
-          const res = await fetch(backendUrl() + '/api/analyze', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              old: S.oldParsed,
-              new: S.newParsed,
-              apiKey,
-              model,
-            }),
-          });
-
-          const data = await res.json();
-          if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-
-          clearInterval(progTimer);
-          setStep(100, 'Анализ завершён ✓');
-          addLog('Готово!', 'ok');
-
-          S.result = data;
-          renderAll(data);
-          document.getElementById('results').classList.add('show');
-          document
-            .getElementById('results')
-            .scrollIntoView({ behavior: 'smooth' });
-        } catch (err) {
-          clearInterval(progTimer);
-          showErr(err.message);
-          addLog('Ошибка: ' + err.message, 'err');
-        } finally {
-          setLoading(false);
-          showProg(false);
-        }
-      }
-
-      // ══════════════════════════════════════════════════════════
-      //  RENDER
-      // ══════════════════════════════════════════════════════════
-      function renderAll(r) {
-        renderStats(r.stats);
-        renderMeta(r.metadata);
-        renderSummary(r.synthesis, r.stats);
-        renderChanges(r.changes);
-        renderRedZones(r.red_zones);
-        renderTrack(r.changes);
-        renderHierarchy(r.synthesis?.hierarchy_check);
-        renderChunks(r.metadata);
-      }
-
-      function renderStats(s) {
-        document.getElementById('stats-row').innerHTML = `
-    <div class="stat blue"><div class="stat-v">${s.total_changes}</div><div class="stat-l">Всего изменений</div></div>
-    <div class="stat green"><div class="stat-v">${s.green_count}</div><div class="stat-l">Безопасных</div></div>
-    <div class="stat yellow"><div class="stat-v">${s.yellow_count}</div><div class="stat-l">Требуют проверки</div></div>
-    <div class="stat red"><div class="stat-v">${s.red_count}</div><div class="stat-l">Противоречий</div></div>
-  `;
-      }
-
-      function renderMeta(m) {
-        const filtered = m.chunks_total - m.chunks_sent - m.cache_hits;
-        document.getElementById('meta-bar').innerHTML = `
-    <span>📄 <span class="meta-val">${esc(m.old_file)}</span> → <span class="meta-val">${esc(m.new_file)}</span></span>
-    <span>🔍 Чанков: <span class="meta-val">${m.chunks_total}</span></span>
-    <span>⚡ Отфильтровано diff: <span class="meta-val">${filtered > 0 ? filtered : '—'}</span></span>
-    <span>💾 Кэш: <span class="meta-val">${m.cache_hits}</span></span>
-    <span>🤖 LLM: <span class="meta-val">${m.chunks_sent}</span></span>
-    <span>🏷 Модель: <span class="meta-val">${esc(m.model_used || '—')}</span></span>
-  `;
-      }
-
-      function renderSummary(syn, stats) {
-        const risks = (syn?.key_risks || [])
-          .map((k) => `<span class="risk-chip">⚠ ${esc(k)}</span>`)
-          .join('');
-        document.getElementById('summary-card').innerHTML = `
+function rSum(syn,stats){
+  const risks=(syn?.key_risks||[]).map(k=>`<span class="rc">⚠ ${e(k)}</span>`).join('');
+  document.getElementById('sum').innerHTML=`
     <h3>Исполнительное резюме</h3>
-    <p>${esc(syn?.executive_summary || 'Анализ выполнен. Подробности в таблице изменений.')}</p>
-    ${risks ? `<div class="key-risks">${risks}</div>` : ''}
-  `;
-      }
+    <p>${e(syn?.executive_summary||'Анализ выполнен. Смотрите таблицу изменений.')}</p>
+    ${risks?`<div class="risks">${risks}</div>`:''}`;
+}
 
-      function renderChanges(changes) {
-        const tbody = document.getElementById('changes-tbody');
-        if (!changes?.length) {
-          tbody.innerHTML = `<tr><td colspan="7" class="empty">Изменений не обнаружено</td></tr>`;
-          return;
-        }
-        tbody.innerHTML = changes
-          .map(
-            (c) => `
+function rChanges(ch){
+  const tb=document.getElementById('ctbody');
+  if(!ch?.length){tb.innerHTML=`<tr><td colspan="7" class="empty">Изменений не обнаружено</td></tr>`;return;}
+  tb.innerHTML=ch.map(c=>`
     <tr>
-      <td><span class="clause-tag">${esc(c.clause || '—')}</span></td>
-      <td><div class="old-t">${esc(c.old_text || '—')}</div></td>
-      <td><div class="new-t">${esc(c.new_text || '—')}</div></td>
-      <td><span class="ct-badge">${esc(c.change_type || '—')}</span></td>
-      <td><span style="font-size:12px;color:var(--accent);font-style:italic">${esc(c.law_reference || '—')}</span></td>
-      <td>${rbadge(c.risk_level)}</td>
-      <td><div class="rec">${esc(c.recommendation || '—')}</div></td>
-    </tr>
-  `,
-          )
-          .join('');
-      }
+      <td><span class="ct">${e(c.clause||'—')}</span></td>
+      <td><div class="ot">${e(c.old_text||'—')}</div></td>
+      <td><div class="nt">${e(c.new_text||'—')}</div></td>
+      <td><span class="ctb">${e(c.change_type||'—')}</span></td>
+      <td><span style="font-size:12px;color:var(--ac);font-style:italic">${e(c.law_reference||'—')}</span></td>
+      <td>${rb(c.risk_level)}</td>
+      <td><div class="rec">${e(c.recommendation||'—')}</div></td>
+    </tr>`).join('');
+}
 
-      function renderRedZones(zones) {
-        const wrap = document.getElementById('rz-wrap');
-        if (!zones?.length) {
-          wrap.innerHTML = `<div class="empty">✅ Критических противоречий с вышестоящими НПА не обнаружено</div>`;
-          return;
-        }
-        wrap.innerHTML = zones
-          .map(
-            (z) => `
-    <div class="rz-card">
-      <div class="rz-clause">⚠ ${esc(z.clause || '—')}</div>
-      <div class="rz-desc">${esc(z.description || '—')}</div>
-      ${z.law_reference ? `<div class="rz-ref">📋 ${esc(z.law_reference)}</div>` : ''}
-    </div>
-  `,
-          )
-          .join('');
-      }
+function rRZ(zones){
+  const w=document.getElementById('rzwrap');
+  if(!zones?.length){w.innerHTML=`<div class="empty">✅ Критических противоречий не обнаружено</div>`;return;}
+  w.innerHTML=zones.map(z=>`
+    <div class="rzc">
+      <div class="rzl">⚠ ${e(z.clause||'—')}</div>
+      <div class="rzd">${e(z.description||'—')}</div>
+      ${z.law_reference?`<div class="rzr">📋 ${e(z.law_reference)}</div>`:''}
+    </div>`).join('');
+}
 
-      function renderTrack(changes) {
-        const scroll = document.getElementById('track-scroll');
-        if (!changes?.length) {
-          scroll.innerHTML = '<div class="empty">Нет данных</div>';
-          return;
-        }
-        scroll.innerHTML = changes
-          .map(
-            (c) => `
-    <div class="track-row changed">
-      <div class="track-cell old">
-        <div class="track-mini-lbl">Было · ${esc(c.clause || '')}</div>
-        ${esc(c.old_text || '—')}
-      </div>
-      <div class="track-cell new">
-        <div class="track-mini-lbl">Стало</div>
-        ${esc(c.new_text || '—')}
-      </div>
-    </div>
-  `,
-          )
-          .join('');
-      }
+function rTrack(ch){
+  const s=document.getElementById('trscroll');
+  if(!ch?.length){s.innerHTML='<div class="empty">Нет данных</div>';return;}
+  s.innerHTML=ch.map(c=>`
+    <div class="trr changed">
+      <div class="trd old"><div class="tml">Было · ${e(c.clause||'')}</div>${e(c.old_text||'—')}</div>
+      <div class="trd new"><div class="tml">Стало</div>${e(c.new_text||'—')}</div>
+    </div>`).join('');
+}
 
-      function renderHierarchy(check) {
-        const list = document.getElementById('hier-list');
-        const statusMap = {
-          compliant: '✓ Соответствует',
-          warning: '⚠ Предупреждение',
-          violation: '✗ Нарушение',
-          not_applicable: '— Н/П',
-        };
-        list.innerHTML = HIER_LEVELS.map((name, i) => {
-          const item =
-            (check || []).find(
-              (h) =>
-                h.level &&
-                h.level.toLowerCase().includes(name.toLowerCase().slice(0, 14)),
-            ) ||
-            (check || [])[i] ||
-            {};
-          const st = item.status || 'not_applicable';
-          return `
-      <li class="hier-item">
-        <div class="hier-num">${i + 1}</div>
-        <div class="hier-body">
-          <div class="hier-name">${esc(name)}</div>
-          ${item.note ? `<div class="hier-note">${esc(item.note)}</div>` : ''}
-        </div>
-        <div class="hier-status">
-          <span class="spill ${st}">${statusMap[st] || st}</span>
-        </div>
-      </li>`;
-        }).join('');
-      }
+function rHier(check){
+  const sm={'compliant':'✓ Соответствует','warning':'⚠ Предупреждение','violation':'✗ Нарушение','not_applicable':'— Н/П'};
+  document.getElementById('hlist').innerHTML=HIER.map((name,i)=>{
+    const item=(check||[]).find(h=>h.level&&h.level.toLowerCase().includes(name.toLowerCase().slice(0,14)))||(check||[])[i]||{};
+    const st=item.status||'not_applicable';
+    return `<li class="hi">
+      <div class="hn">${i+1}</div>
+      <div class="hb"><div class="hname">${e(name)}</div>${item.note?`<div class="hnote">${e(item.note)}</div>`:''}</div>
+      <div class="hst"><span class="sp2 ${st}">${sm[st]||st}</span></div>
+    </li>`;
+  }).join('');
+}
 
-      function renderChunks(meta) {
-        const grid = document.getElementById('chunks-grid');
-        const total = meta.chunks_total || 0;
-        const sent = meta.chunks_sent || 0;
-        const cached = meta.cache_hits || 0;
-        const skipped = total - sent - cached;
+function rChunks(m, chunkResults){
+  const total=m.chunks_total||0, sent=m.chunks_sent||0, cached=m.cache_hits||0, skip=total-sent-cached;
+  document.getElementById('cmeta').textContent=
+    `Всего: ${total} · Пропущено diff: ${skip} · Из кэша: ${cached} · Отправлено в LLM: ${sent}`;
+  const grid=document.getElementById('cgrid');
+  if(!total){grid.innerHTML='<div style="color:var(--mu);font-size:13px">Нет данных</div>';return;}
+  const items=[];
+  for(let i=0;i<total;i++){
+    const cr=chunkResults?.[i];
+    let cls='', label='', color='var(--mu)';
+    if(cr){
+      cls=cr.has_changes!==false?'changed':'';
+      label=cr.has_changes!==false?`⚡ ${(cr.changes||[]).length} изм.`:'✓ Без изменений';
+      color=cr.has_changes!==false?'var(--yw)':'var(--gr)';
+    } else if(i<cached){
+      cls='cached'; label='💾 Из кэша'; color='var(--ac)';
+    } else if(i>=sent+cached){
+      cls='skipped'; label='⚡ diff-пропущен'; color='var(--mu)';
+    } else {
+      label='— нет данных'; color='var(--mu)';
+    }
+    items.push(`<div class="cc ${cls}">
+      <div class="ci">Чанк #${i+1}</div>
+      <div class="cs">${cr?.summary?e(cr.summary.slice(0,100)):'—'}</div>
+      <div class="cn" style="color:${color}">${label}</div>
+    </div>`);
+  }
+  grid.innerHTML=items.join('');
+}
 
-        document.getElementById('chunks-meta').textContent =
-          `Всего чанков: ${total} · Отфильтровано diff: ${skipped} · Кэш: ${cached} · Отправлено в LLM: ${sent}`;
+// ── UI helpers ───────────────────────────────────────────
+function stab(btn){
+  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tp').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('p-'+btn.dataset.tab).classList.add('active');
+}
+function setLoading(on){
+  const b=document.getElementById('btn-run');
+  b.disabled=on; b.innerHTML=on?'<div class="sp"></div> Анализирую…':'Анализировать';
+  if(!on) chkReady();
+}
+function showProg(on){
+  document.getElementById('prog').style.display=on?'block':'none';
+  if(on){document.getElementById('log').innerHTML=''; document.getElementById('cdots').innerHTML='';}
+}
+function setStep(pct,msg){
+  document.getElementById('pfill').style.width=pct+'%';
+  document.getElementById('ppct').textContent=pct+'%';
+  document.getElementById('plbl').textContent=msg;
+}
+function addLog(msg,cls=''){
+  const box=document.getElementById('log');
+  const el=document.createElement('div'); el.className='ll '+cls;
+  el.innerHTML=`<span class="ld"></span>${e(msg)}`;
+  box.appendChild(el); box.scrollTop=box.scrollHeight;
+}
+function showErr(msg){const el=document.getElementById('errbox');el.style.display='block';el.textContent='⚠ '+msg;}
+function hideErr(){document.getElementById('errbox').style.display='none';}
+function rb(l){const labels={green:'Безопасно',yellow:'Проверить',red:'Противоречие'};const lv=l||'yellow';return`<span class="rb ${lv}"><span class="rd"></span>${labels[lv]||lv}</span>`;}
+function e(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
-        if (!total) {
-          grid.innerHTML =
-            '<div style="color:var(--muted);font-size:13px">Нет данных</div>';
-          return;
-        }
-
-        const items = [];
-        for (let i = 0; i < total; i++) {
-          const isSkipped = i >= sent + cached;
-          items.push(`
-      <div class="chunk-card ${isSkipped ? 'skipped' : 'changed'}">
-        <div class="chunk-idx">Чанк #${i + 1} ${isSkipped ? '· пропущен diff' : cached && i < cached ? '· из кэша 💾' : '· LLM ✦'}</div>
-        <div class="chunk-sum">${isSkipped ? 'Идентичен старой редакции (ratio &gt; 0.95)' : 'Изменения обнаружены и проанализированы'}</div>
-      </div>
-    `);
-        }
-        grid.innerHTML = items.join('');
-      }
-
-      // ══════════════════════════════════════════════════════════
-      //  UI HELPERS
-      // ══════════════════════════════════════════════════════════
-      function switchTab(btn) {
-        document
-          .querySelectorAll('.tab-btn')
-          .forEach((b) => b.classList.remove('active'));
-        document
-          .querySelectorAll('.tab-pane')
-          .forEach((p) => p.classList.remove('active'));
-        btn.classList.add('active');
-        document
-          .getElementById('pane-' + btn.dataset.tab)
-          .classList.add('active');
-      }
-
-      function setLoading(on) {
-        const btn = document.getElementById('btn-run');
-        btn.disabled = on;
-        btn.innerHTML = on
-          ? '<div class="spin"></div> Анализирую…'
-          : 'Анализировать';
-        if (!on) checkReady();
-      }
-
-      function showProg(on) {
-        document.getElementById('prog').style.display = on ? 'block' : 'none';
-        if (on) document.getElementById('log-box').innerHTML = '';
-      }
-
-      function setStep(pct, msg) {
-        document.getElementById('prog-fill').style.width = pct + '%';
-        document.getElementById('prog-pct').textContent = pct + '%';
-        document.getElementById('prog-lbl').textContent = msg;
-      }
-
-      function addLog(msg, cls = '') {
-        const box = document.getElementById('log-box');
-        const el = document.createElement('div');
-        el.className = 'log-line ' + cls;
-        el.innerHTML = `<span class="log-dot"></span>${esc(msg)}`;
-        box.appendChild(el);
-        box.scrollTop = box.scrollHeight;
-      }
-
-      function showErr(msg) {
-        const el = document.getElementById('err-box');
-        el.style.display = 'block';
-        el.textContent = '⚠ ' + msg;
-      }
-      function hideErr() {
-        document.getElementById('err-box').style.display = 'none';
-      }
-
-      function rbadge(level) {
-        const l = level || 'yellow';
-        const labels = {
-          green: 'Безопасно',
-          yellow: 'Проверить',
-          red: 'Противоречие',
-        };
-        return `<span class="rbadge ${l}"><span class="rdot"></span>${labels[l] || l}</span>`;
-      }
-
-      function esc(s) {
-        if (!s) return '';
-        return String(s)
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-          .replace(/"/g, '&quot;');
-      }
-
-      // ══════════════════════════════════════════════════════════
-      //  EXPORT
-      // ══════════════════════════════════════════════════════════
-      function exportTxt() {
-        if (!S.result) return;
-        const r = S.result;
-        const m = r.metadata;
-        let txt = `ОТЧЁТ СРАВНЕНИЯ РЕДАКЦИЙ НПА — ЛексАнализ v1.0
+// ── Export ───────────────────────────────────────────────
+function doExport(){
+  if(!S.result) return;
+  const r=S.result, m=r.metadata;
+  const skip=(m.chunks_total||0)-(m.chunks_sent||0)-(m.cache_hits||0);
+  let txt=`ОТЧЁТ СРАВНЕНИЯ РЕДАКЦИЙ НПА — ЛексАнализ v1.0
 Дата: ${new Date().toLocaleString('ru')}
 Старая редакция: ${m.old_file}
 Новая редакция:  ${m.new_file}
-Модель:          ${m.model_used || '—'}
-Чанков всего:    ${m.chunks_total}  |  Отправлено в LLM: ${m.chunks_sent}  |  Кэш: ${m.cache_hits}
-${'═'.repeat(60)}
-
-РЕЗЮМЕ
-${r.synthesis?.executive_summary || '—'}
-
-СТАТИСТИКА
-Всего изменений: ${r.stats.total_changes}
-Безопасных:      ${r.stats.green_count}
-Требуют проверки:${r.stats.yellow_count}
-Противоречий:    ${r.stats.red_count}
-
-${'═'.repeat(60)}
-ТАБЛИЦА ИЗМЕНЕНИЙ
-${'═'.repeat(60)}
-`;
-        (r.changes || []).forEach((c, i) => {
-          txt += `\n${i + 1}. ${c.clause || '—'}
-   Было:         ${c.old_text || '—'}
-   Стало:        ${c.new_text || '—'}
-   Тип:          ${c.change_type || '—'}
-   Риск:         ${(c.risk_level || '').toUpperCase()}
-   Статья НПА:   ${c.law_reference || '—'}
-   Рекомендация: ${c.recommendation || '—'}\n`;
-        });
-
-        txt += `\n${'═'.repeat(60)}\nКРАСНЫЕ ЗОНЫ\n${'═'.repeat(60)}\n`;
-        if (!r.red_zones?.length) {
-          txt += 'Критических противоречий не обнаружено.\n';
-        } else {
-          r.red_zones.forEach((z, i) => {
-            txt += `\n${i + 1}. ${z.clause || '—'}\n   ${z.description || '—'}\n   Норма: ${z.law_reference || '—'}\n`;
-          });
-        }
-
-        txt += `\n${'═'.repeat(60)}\nИЕРАРХИЯ НПА\n${'═'.repeat(60)}\n`;
-        (r.synthesis?.hierarchy_check || []).forEach((h, i) => {
-          txt += `${i + 1}. ${h.level}: ${h.status} — ${h.note || ''}\n`;
-        });
-
-        txt += `\n— ЛексАнализ | Национальный правовой портал: https://pravo.by\n`;
-
-        const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `Анализ_НПА_${new Date().toISOString().slice(0, 10)}.txt`;
-        a.click();
-      }
-    </script>
-  </body>
+Модель:          ${m.model_used||'—'}
+Чанков: ${m.chunks_total} | Diff-пропущено: ${skip} | Кэш: ${m.cache_hits} | LLM: ${m.chunks_sent}
+${'═'.repeat(60)}\n\nРЕЗЮМЕ\n${r.synthesis?.executive_summary||'—'}\n\n`;
+  txt+=`СТАТИСТИКА\nВсего: ${r.stats.total_changes} | Зелёных: ${r.stats.green_count} | Жёлтых: ${r.stats.yellow_count} | Красных: ${r.stats.red_count}\n\n`;
+  txt+='═'.repeat(60)+'\nТАБЛИЦА ИЗМЕНЕНИЙ\n'+'═'.repeat(60)+'\n';
+  (r.changes||[]).forEach((c,i)=>{txt+=`\n${i+1}. ${c.clause||'—'}\n   Было:    ${c.old_text||'—'}\n   Стало:   ${c.new_text||'—'}\n   Тип:     ${c.change_type||'—'}\n   Риск:    ${(c.risk_level||'').toUpperCase()}\n   Статья:  ${c.law_reference||'—'}\n   Реком.:  ${c.recommendation||'—'}\n`;});
+  txt+='\n'+'═'.repeat(60)+'\nКРАСНЫЕ ЗОНЫ\n'+'═'.repeat(60)+'\n';
+  if(!(r.red_zones?.length)) txt+='Не обнаружено.\n';
+  else r.red_zones.forEach((z,i)=>{txt+=`\n${i+1}. ${z.clause||'—'}\n   ${z.description||'—'}\n   Норма: ${z.law_reference||'—'}\n`;});
+  txt+='\n'+'═'.repeat(60)+'\nИЕРАРХИЯ НПА\n'+'═'.repeat(60)+'\n';
+  (r.synthesis?.hierarchy_check||[]).forEach((h,i)=>{txt+=`${i+1}. ${h.level}: ${h.status} — ${h.note||''}\n`;});
+  txt+='\n— ЛексАнализ | https://pravo.by\n';
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain;charset=utf-8'}));
+  a.download=`Анализ_НПА_${new Date().toISOString().slice(0,10)}.txt`; a.click();
+}
+</script>
+</body>
 </html>
