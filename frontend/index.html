@@ -206,6 +206,7 @@ header{position:sticky;top:0;z-index:100;background:rgba(10,12,18,.94);backdrop-
   </div>
   <div class="hdr-r">
     <span class="pill p-yellow" id="bpill">⬤ Проверка…</span>
+    <button class="btn-sm" onclick="openHistory()" style="font-size:11px;padding:5px 12px">📂 История</button>
     <span class="pill p-blue">BSUIR 2026</span>
   </div>
 </div>
@@ -643,6 +644,102 @@ ${'═'.repeat(60)}\n\nРЕЗЮМЕ\n${r.synthesis?.executive_summary||'—'}\n\
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain;charset=utf-8'}));
   a.download=`Анализ_НПА_${new Date().toISOString().slice(0,10)}.txt`; a.click();
+}
+</script>
+<!-- HISTORY MODAL -->
+<div id="modal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);padding:24px;overflow-y:auto">
+  <div style="max-width:900px;margin:0 auto;background:var(--bg3);border:1px solid var(--bd2);border-radius:16px;padding:28px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div style="font-family:var(--fh);font-size:18px;font-weight:700">📂 История документов и анализов</div>
+      <button class="btn-sm" onclick="closeHistory()">✕ Закрыть</button>
+    </div>
+
+    <div style="font-family:var(--fh);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--mu);margin-bottom:12px">Загруженные документы</div>
+    <div id="docs-list" style="margin-bottom:24px"></div>
+
+    <div style="font-family:var(--fh);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--mu);margin-bottom:12px">Прошлые анализы</div>
+    <div id="analyses-list"></div>
+  </div>
+</div>
+
+<script>
+async function openHistory() {
+  document.getElementById('modal').style.display = 'block';
+  await Promise.all([loadDocs(), loadAnalyses()]);
+}
+function closeHistory() { document.getElementById('modal').style.display = 'none'; }
+
+async function loadDocs() {
+  const el = document.getElementById('docs-list');
+  el.innerHTML = '<div style="color:var(--mu);font-size:13px">Загрузка…</div>';
+  try {
+    const r = await fetch(burl() + '/api/documents');
+    const d = await r.json();
+    if (!d.documents?.length) { el.innerHTML = '<div style="color:var(--mu);font-size:13px">Нет документов</div>'; return; }
+    el.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:12px">
+      <thead><tr>
+        <th style="text-align:left;padding:8px 10px;color:var(--mu);border-bottom:1px solid var(--bd);font-family:var(--fh);font-size:10px;font-weight:600;text-transform:uppercase">Файл</th>
+        <th style="text-align:left;padding:8px 10px;color:var(--mu);border-bottom:1px solid var(--bd);font-family:var(--fh);font-size:10px;font-weight:600;text-transform:uppercase">Размер</th>
+        <th style="text-align:left;padding:8px 10px;color:var(--mu);border-bottom:1px solid var(--bd);font-family:var(--fh);font-size:10px;font-weight:600;text-transform:uppercase">Чанков</th>
+        <th style="text-align:left;padding:8px 10px;color:var(--mu);border-bottom:1px solid var(--bd);font-family:var(--fh);font-size:10px;font-weight:600;text-transform:uppercase">Дата</th>
+        <th style="padding:8px 10px;border-bottom:1px solid var(--bd)"></th>
+      </tr></thead>
+      <tbody>${d.documents.map(doc => `
+        <tr style="border-bottom:1px solid var(--bd)">
+          <td style="padding:8px 10px;color:var(--tx)">${e(doc.filename)}</td>
+          <td style="padding:8px 10px;color:var(--mu)">${(doc.char_count/1000).toFixed(1)}k симв.</td>
+          <td style="padding:8px 10px;color:var(--mu)">${doc.para_count} абз.</td>
+          <td style="padding:8px 10px;color:var(--mu)">${new Date(doc.created_at*1000).toLocaleString('ru')}</td>
+          <td style="padding:8px 10px">
+            <button onclick="deleteDoc('${doc.id}')" style="font-size:11px;padding:3px 8px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--rd);border-radius:5px;cursor:pointer">Удалить</button>
+          </td>
+        </tr>`).join('')}</tbody>
+    </table>`;
+  } catch(err) { el.innerHTML = `<div style="color:var(--rd);font-size:13px">Ошибка: ${err.message}</div>`; }
+}
+
+async function loadAnalyses() {
+  const el = document.getElementById('analyses-list');
+  el.innerHTML = '<div style="color:var(--mu);font-size:13px">Загрузка…</div>';
+  try {
+    const r = await fetch(burl() + '/api/analyses');
+    const d = await r.json();
+    if (!d.analyses?.length) { el.innerHTML = '<div style="color:var(--mu);font-size:13px">Нет анализов</div>'; return; }
+    el.innerHTML = d.analyses.map(a => `
+      <div style="background:var(--bg4);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;margin-bottom:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+          <div>
+            <div style="font-size:13px;color:var(--tx);font-weight:500">${e(a.old_filename)} → ${e(a.new_filename)}</div>
+            <div style="font-size:11px;color:var(--mu);margin-top:3px">
+              🤖 ${e(a.model_used||'—')} ·
+              ${new Date(a.created_at*1000).toLocaleString('ru')} ·
+              <span style="color:var(--rd)">⬤ ${a.stats?.red_count||0}</span>
+              <span style="color:var(--yw)"> ⬤ ${a.stats?.yellow_count||0}</span>
+              <span style="color:var(--gr)"> ⬤ ${a.stats?.green_count||0}</span>
+            </div>
+          </div>
+          <button onclick="loadAnalysis('${a.id}')" class="btn-sm" style="font-size:11px">Открыть</button>
+        </div>
+      </div>`).join('');
+  } catch(err) { el.innerHTML = `<div style="color:var(--rd);font-size:13px">Ошибка: ${err.message}</div>`; }
+}
+
+async function deleteDoc(docId) {
+  if (!confirm('Удалить документ?')) return;
+  await fetch(burl() + '/api/documents/' + docId, {method:'DELETE'});
+  await loadDocs();
+}
+
+async function loadAnalysis(analysisId) {
+  closeHistory();
+  try {
+    const r = await fetch(burl() + '/api/analyses/' + analysisId);
+    const data = await r.json();
+    S.result = data;
+    renderAll(data);
+    document.getElementById('results').classList.add('show');
+    document.getElementById('results').scrollIntoView({behavior:'smooth'});
+  } catch(err) { showErr('Ошибка загрузки: ' + err.message); }
 }
 </script>
 </body>
