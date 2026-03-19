@@ -1,9 +1,9 @@
-# server.py — ЛексАнализ backend v2 (Railway Production)
+# server.py — ЛексАнализ backend v2 (Railway Production) - FIXED
 # Pipeline: Upload → converter (docx/pdf→txt) → chunker → DB → analyze → DB
 
 from __future__ import annotations
 import json, logging, os, sys, traceback
-from flask import Flask, Response, jsonify, request, send_from_directory
+from flask import Flask, Response, jsonify, request, send_file
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -68,14 +68,22 @@ def internal_error(error):
 @app.route("/<path:path>")
 def _frontend(path: str):
     """Serve frontend files."""
-    fp = os.path.join(_FRONTEND, path)
-    if path and os.path.exists(fp):
-        logger.info(f"Serving file: {path}")
-        return send_from_directory(_FRONTEND, path)
+    # Construct full file path
+    if path:
+        file_path = os.path.join(_FRONTEND, path)
+    else:
+        file_path = os.path.join(_FRONTEND, "index.html")
 
-    # Log frontend request
-    logger.info(f"Serving index.html for path: {path if path else '/'}")
-    return send_from_directory(_FRONTEND, "index.html")
+    # Check if file exists
+    if not os.path.exists(file_path):
+        # If specific file not found, serve index.html (SPA fallback)
+        file_path = os.path.join(_FRONTEND, "index.html")
+
+    logger.info(f"Serving: {file_path} ({os.path.getsize(file_path)} bytes)")
+
+    # Send file with explicit mimetype
+    mimetype = "text/html" if file_path.endswith(".html") else None
+    return send_file(file_path, mimetype=mimetype)
 
 
 @app.get("/health")
