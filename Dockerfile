@@ -1,6 +1,6 @@
 FROM python:3.12-slim
 
-# System deps for pdfplumber (needs poppler) and python-docx
+# System dependencies for PDF processing
 RUN apt-get update && apt-get install -y --no-install-recommends \
     poppler-utils \
     libxml2 \
@@ -9,21 +9,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Install Python deps first (layer cache)
+# Install Python dependencies (cached layer)
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy source
+# Copy application code
 COPY backend/ ./backend/
 COPY frontend/ ./frontend/
 
-# DB volume mount point
-RUN mkdir -p /app/backend/db /app/data
+# Create necessary directories
+RUN mkdir -p /app/data /app/backend/db
 
-# DB file goes to /app/data so it persists via volume
+# Environment variables (Railway will override PORT)
 ENV DB_PATH=/app/data/lexanaliz.db
 ENV PORT=8000
+ENV PYTHONUNBUFFERED=1
 
 EXPOSE 8000
 
-CMD ["python", "backend/server.py"]
+# Use gunicorn for production
+CMD gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 --access-logfile - --error-logfile - backend.server:app
