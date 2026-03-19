@@ -31,7 +31,8 @@ EXPOSE 8000
 # Замени последнюю строку на:
 CMD gunicorn --bind 0.0.0.0:$PORT \
     --workers 1 \
-    --timeout 120 \
+    --timeout 300 \
+    --graceful-timeout 30 \
     --access-logfile - \
     --error-logfile - \
     "backend.server:create_app()"
