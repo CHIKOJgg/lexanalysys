@@ -1,9 +1,9 @@
-# server.py — ЛексАнализ backend v2 (Railway Production) - FIXED
+# server.py — ЛексАнализ backend v2 (Railway Production) - Direct File Read
 # Pipeline: Upload → converter (docx/pdf→txt) → chunker → DB → analyze → DB
 
 from __future__ import annotations
 import json, logging, os, sys, traceback
-from flask import Flask, Response, jsonify, request, send_file
+from flask import Flask, Response, jsonify, request
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -37,7 +37,7 @@ if os.path.exists(_FRONTEND):
     else:
         logger.error(f"❌ index.html NOT FOUND")
 
-app = Flask(__name__, static_folder=_FRONTEND, static_url_path="")
+app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024  # 50 MB
 app.config["JSON_AS_ASCII"] = False  # Support Cyrillic in JSON responses
 
@@ -67,23 +67,33 @@ def internal_error(error):
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
 def _frontend(path: str):
-    """Serve frontend files."""
-    # Construct full file path
-    if path:
-        file_path = os.path.join(_FRONTEND, path)
-    else:
-        file_path = os.path.join(_FRONTEND, "index.html")
+    """Serve frontend files by reading and returning content directly."""
+    # Always serve index.html for SPA
+    file_path = os.path.join(_FRONTEND, "index.html")
 
-    # Check if file exists
     if not os.path.exists(file_path):
-        # If specific file not found, serve index.html (SPA fallback)
-        file_path = os.path.join(_FRONTEND, "index.html")
+        logger.error(f"❌ File not found: {file_path}")
+        return "Frontend not found", 404
 
-    logger.info(f"Serving: {file_path} ({os.path.getsize(file_path)} bytes)")
+    # Read file content
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read()
 
-    # Send file with explicit mimetype
-    mimetype = "text/html" if file_path.endswith(".html") else None
-    return send_file(file_path, mimetype=mimetype)
+        logger.info(f"✅ Read {len(content)} bytes from {file_path}")
+
+        # Return as Response with explicit headers
+        return Response(
+            content,
+            mimetype='text/html',
+            headers={
+                'Content-Type': 'text/html; charset=utf-8',
+                'Content-Length': str(len(content))
+            }
+        )
+    except Exception as e:
+        logger.error(f"❌ Error reading file: {e}")
+        return f"Error reading frontend: {e}", 500
 
 
 @app.get("/health")
