@@ -1,32 +1,43 @@
-version: "3.9"
+FROM python:3.12-slim
 
-services:
-  backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: lexanaliz-backend
-    ports:
-      - "8000:8000"
-    volumes:
-      # Persist SQLite DB across container restarts
-      - lexanaliz-data:/app/data
-      # Optional: mount local cache.json for LLM response cache
-      - lexanaliz-cache:/app/backend
-    environment:
-      - PORT=8000
-      - DB_PATH=/app/data/lexanaliz.db
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "python", "-c",
-             "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
+# System dependencies for PDF processing
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    poppler-utils \
+    libxml2 \
+    libxslt1.1 \
+    && rm -rf /var/lib/apt/lists/*
 
-volumes:
-  lexanaliz-data:
-    driver: local
-  lexanaliz-cache:
-    driver: local
+WORKDIR /app
+
+# Install Python dependencies (cached layer)
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY backend/ ./backend/
+COPY frontend/ ./frontend/
+
+# Create necessary directories
+RUN mkdir -p /app/data /app/backend/db
+
+# Environment variables (Railway will override PORT)
+ENV DB_PATH=/app/data/lexanaliz.db
+ENV PORT=8000
+ENV PYTHONUNBUFFERED=1
+
+EXPOSE 8000
+
+# Use gunicorn for production with extended timeouts
+# --timeout 600: 10 min per request (LLM calls can be slow)
+# --graceful-timeout 60: 60s for graceful shutdown
+# --workers 1: single worker (SQLite + in-memory cache)
+# --threads 2: handle 2 concurrent requests per worker
+CMD gunicorn --bind 0.0.0.0:$PORT \
+    --workers 1 \
+    --threads 2 \
+    --timeout 600 \
+    --graceful-timeout 60 \
+    --keep-alive 5 \
+    --access-logfile - \
+    --error-logfile - \
+    "backend.server:create_app()"

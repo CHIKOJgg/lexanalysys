@@ -12,8 +12,9 @@ from .openrouter import call_openrouter, FREE_MODELS
 
 logger = logging.getLogger(__name__)
 
-MAX_CHUNKS = 12
-INTER_REQUEST_DELAY = 4.5   # seconds between LLM calls (rate-limit safety margin)
+# Reduced for Railway free tier testing
+MAX_CHUNKS = 5          # было 8 - меньше chunks = быстрее анализ
+INTER_REQUEST_DELAY = 3.0   # было 4.5 - быстрее между запросами (осторожно с rate limit!)
 FREE_MODELS_DEFAULT  = FREE_MODELS[0]   # "openrouter/free"
 
 # ── Prompts ───────────────────────────────────────────────────────────────────
