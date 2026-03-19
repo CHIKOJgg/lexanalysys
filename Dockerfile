@@ -28,4 +28,10 @@ ENV PYTHONUNBUFFERED=1
 EXPOSE 8000
 
 # Use gunicorn for production
-CMD gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 --access-logfile - --error-logfile - backend.server:app
+# Замени последнюю строку на:
+CMD gunicorn --bind 0.0.0.0:$PORT \
+    --workers 2 \
+    --timeout 120 \
+    --access-logfile - \
+    --error-logfile - \
+    "backend.server:create_app()"
