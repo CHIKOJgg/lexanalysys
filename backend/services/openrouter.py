@@ -20,19 +20,23 @@ OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 # openrouter/free is tried FIRST -- it picks any available free model automatically
 # Specific models are fallback in case the router itself rate-limits
 FREE_MODELS = [
-    "openrouter/free"                   # auto-router (recommended
+    "openrouter/free",  # auto-router (recommended)
+    "deepseek/deepseek-r1-distill-qwen-14b:free",
+    "deepseek/deepseek-r1-distill-llama-8b:free",
+    "meta-llama/llama-3.2-3b-instruct:free",
+    "google/gemma-2-9b-it:free",
 ]
 
-_TIMEOUT = 60           # seconds per request
-_MAX_RETRIES = 3        # retries per model on 429/5xx
-_RETRY_DELAYS = [3, 6, 12]   # fixed backoff steps (seconds)
+_TIMEOUT = 90  # seconds per request (increased from 60)
+_MAX_RETRIES = 3  # retries per model on 429/5xx
+_RETRY_DELAYS = [3, 6, 12]  # fixed backoff steps (seconds)
 
 
 def call_openrouter(
-    api_key: str,
-    system: str,
-    user: str,
-    model: str | None = None,
+        api_key: str,
+        system: str,
+        user: str,
+        model: str | None = None,
 ) -> tuple[str, str]:
     """
     Call OpenRouter. Returns (response_text, model_actually_used).
@@ -103,7 +107,7 @@ def _do_request(api_key: str, model: str, system: str, user: str) -> tuple[str, 
         "max_tokens": 1200,
         "messages": [
             {"role": "system", "content": system},
-            {"role": "user",   "content": user},
+            {"role": "user", "content": user},
         ],
     }
     body = json.dumps(payload).encode("utf-8")
@@ -112,33 +116,59 @@ def _do_request(api_key: str, model: str, system: str, user: str) -> tuple[str, 
         data=body,
         headers={
             "Authorization": f"Bearer {api_key}",
-            "Content-Type":  "application/json",
-            "HTTP-Referer":  "https://lexanaliz.by",
-            "X-Title":       "LexAnaliz NPA",
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://lexanaliz.by",
+            "X-Title": "LexAnaliz NPA",
         },
         method="POST",
     )
 
-    with urllib.request.urlopen(req, timeout=_TIMEOUT) as resp:
-        raw = resp.read().decode("utf-8")
+    try:
+        with urllib.request.urlopen(req, timeout=_TIMEOUT) as resp:
+            raw = resp.read().decode("utf-8")
+    except urllib.error.HTTPError as e:
+        # Read error response body for debugging
+        try:
+            error_body = e.read().decode("utf-8")
+            logger.error("HTTP %d for model=%s: %s", e.code, model, error_body[:500])
+        except:
+            pass
+        raise
 
-    data = json.loads(raw)
+    # Log raw response for debugging empty content issues
+    if not raw or len(raw) < 10:
+        logger.error("Empty/short response for model=%s: %r", model, raw)
+        raise RuntimeError(f"Empty response from API (len={len(raw)})")
+
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError as e:
+        logger.error("Invalid JSON for model=%s: %s ... response: %r",
+                     model, str(e), raw[:500])
+        raise RuntimeError(f"Invalid JSON response: {e}")
 
     # OpenRouter sometimes returns 200 with error body
     if "error" in data:
-        err  = data["error"]
+        err = data["error"]
         code = err.get("code", 0)
-        msg  = err.get("message", str(err))
+        msg = err.get("message", str(err))
+        logger.error("API error for model=%s code=%s msg=%s", model, code, msg)
         if code == 429:
             raise urllib.error.HTTPError(OPENROUTER_URL, 429, msg, {}, None)
         raise RuntimeError(f"API error {code}: {msg}")
 
     choices = data.get("choices") or []
     if not choices:
+        logger.error("No choices for model=%s, response: %r", model, raw[:500])
         raise RuntimeError(f"No choices in response: {raw[:200]}")
 
-    content = choices[0].get("message", {}).get("content", "")
-    if not content:
+    message = choices[0].get("message", {})
+    content = message.get("content", "")
+
+    # Check for empty content
+    if not content or not content.strip():
+        logger.error("Empty content for model=%s, message: %r, full response: %r",
+                     model, message, raw[:500])
         raise RuntimeError("Empty content in response")
 
     # model field in response shows which free model was actually used
