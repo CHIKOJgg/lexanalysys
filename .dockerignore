@@ -1,28 +1,45 @@
-__pycache__
-*.pyc
-*.pyo
-*.pyd
-.Python
-*.so
-*.egg
-*.egg-info
-dist
-build
+# Git
 .git
 .gitignore
-.env
-.venv
-venv/
-ENV/
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv
+env
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data (don't copy to image)
+data/
 *.db
 *.db-journal
 cache.json
+
+# Docs
+*.md
+!README.md
+
+# Tests
+tests/
+test_*
+*_test.py
+
+# Logs
 *.log
-.DS_Store
-Thumbs.db
-node_modules/
-.pytest_cache/
-.coverage
-htmlcov/
-docker-compose.yml
-README.md
+
+# NOTE: Do NOT add these (needed in Docker):
+# backend/
+# frontend/
+# requirements.txt

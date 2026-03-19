@@ -1,4 +1,4 @@
-# server.py — ЛексАнализ backend v2 (Production Ready)
+# server.py — ЛексАнализ backend v2 (Railway Production)
 # Pipeline: Upload → converter (docx/pdf→txt) → chunker → DB → analyze → DB
 
 from __future__ import annotations
@@ -24,6 +24,18 @@ logging.basicConfig(
 logger = logging.getLogger("lexanaliz")
 
 _FRONTEND = os.path.join(os.path.dirname(__file__), "..", "frontend")
+_FRONTEND = os.path.abspath(_FRONTEND)
+
+# Log frontend path for debugging
+logger.info(f"Frontend path: {_FRONTEND}")
+logger.info(f"Frontend exists: {os.path.exists(_FRONTEND)}")
+if os.path.exists(_FRONTEND):
+    logger.info(f"Frontend contents: {os.listdir(_FRONTEND)}")
+    index_path = os.path.join(_FRONTEND, "index.html")
+    if os.path.exists(index_path):
+        logger.info(f"✅ index.html found: {os.path.getsize(index_path)} bytes")
+    else:
+        logger.error(f"❌ index.html NOT FOUND")
 
 app = Flask(__name__, static_folder=_FRONTEND, static_url_path="")
 app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024  # 50 MB
@@ -58,7 +70,11 @@ def _frontend(path: str):
     """Serve frontend files."""
     fp = os.path.join(_FRONTEND, path)
     if path and os.path.exists(fp):
+        logger.info(f"Serving file: {path}")
         return send_from_directory(_FRONTEND, path)
+
+    # Log frontend request
+    logger.info(f"Serving index.html for path: {path if path else '/'}")
     return send_from_directory(_FRONTEND, "index.html")
 
 
@@ -73,7 +89,9 @@ def health():
         return jsonify({
             "status": "ok",
             "version": "2.0.0",
-            "database": "connected"
+            "database": "connected",
+            "frontend_path": _FRONTEND,
+            "index_exists": os.path.exists(os.path.join(_FRONTEND, "index.html"))
         })
     except Exception as e:
         logger.error(f"Health check failed: {e}")
