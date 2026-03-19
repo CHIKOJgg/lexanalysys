@@ -30,7 +30,7 @@ EXPOSE 8000
 # Use gunicorn for production
 # Замени последнюю строку на:
 CMD gunicorn --bind 0.0.0.0:$PORT \
-    --workers 2 \
+    --workers 1 \
     --timeout 120 \
     --access-logfile - \
     --error-logfile - \
