@@ -1,4 +1,5 @@
 # analyzer.py -- pipeline: diff -> cache -> LLM -> JSON extract -> cache -> synthesis
+# v3: added comparison_type ("auto" | "manual") to metadata
 
 import re
 import json
@@ -12,10 +13,9 @@ from .openrouter import call_openrouter, FREE_MODELS
 
 logger = logging.getLogger(__name__)
 
-# Reduced for Railway free tier testing
-MAX_CHUNKS = 5          # было 8 - меньше chunks = быстрее анализ
-INTER_REQUEST_DELAY = 3.0   # было 4.5 - быстрее между запросами (осторожно с rate limit!)
-FREE_MODELS_DEFAULT  = FREE_MODELS[0]   # "openrouter/free"
+MAX_CHUNKS = 5
+INTER_REQUEST_DELAY = 3.0
+FREE_MODELS_DEFAULT = FREE_MODELS[0]  # "openrouter/free"
 
 # ── Prompts ───────────────────────────────────────────────────────────────────
 
@@ -86,27 +86,22 @@ def _analyze_chunk(
     old_text = pair["old_text"]
     new_text = pair["new_text"]
 
-    # 1. Diff filter
     if pair["skip"]:
         return None
 
-    # 2. Cache hit
     cached = cache_mod.get(old_text, new_text)
     if cached is not None:
         metrics["cache_hits"] += 1
         logger.info("cache hit chunk=%d", pair["index"])
         return cached
 
-    # 3. Trim tokens
     old_clean = re.sub(r"\s+", " ", old_text).strip()[:1800]
     new_clean = re.sub(r"\s+", " ", new_text).strip()[:1800]
     user = _USER_CHUNK_TPL.format(old=old_clean, new=new_clean)
 
-    # 4. Call LLM
     metrics["chunks_sent"] += 1
     try:
         raw, used_model = call_openrouter(api_key, _SYSTEM_CHUNK, user, model)
-        # Track the actual model used (openrouter/free resolves to a real model)
         metrics["model_used"] = used_model
         result = _extract_json(raw)
         if result is None:
@@ -118,7 +113,6 @@ def _analyze_chunk(
         metrics["chunks_sent"] -= 1
         return None
 
-    # 5. Cache save
     cache_mod.set(old_text, new_text, result)
     return result
 
@@ -158,16 +152,25 @@ def run_analysis(
     new_parsed: dict,
     api_key: str,
     model: str | None = None,
+    comparison_type: str = "manual",   # "manual" | "auto"
 ) -> dict:
+    """
+    Run full analysis pipeline between old and new parsed documents.
+
+    comparison_type:
+        "manual" — user uploaded both documents explicitly
+        "auto"   — new doc uploaded, old doc found automatically from pravo DB
+    """
     old_chunks = old_parsed.get("chunks", [])
     new_chunks = new_parsed.get("chunks", [])
     pairs = align_chunks(old_chunks, new_chunks)[:MAX_CHUNKS]
 
     metrics: dict[str, Any] = {
-        "chunks_total": len(pairs),
-        "chunks_sent":  0,
-        "cache_hits":   0,
-        "model_used":   model or FREE_MODELS_DEFAULT,
+        "chunks_total":    len(pairs),
+        "chunks_sent":     0,
+        "cache_hits":      0,
+        "model_used":      model or FREE_MODELS_DEFAULT,
+        "comparison_type": comparison_type,   # ← NEW
     }
 
     all_changes:   list[dict] = []
@@ -178,7 +181,6 @@ def run_analysis(
         result = _analyze_chunk(pair, api_key, model, metrics)
         if result is None:
             continue
-        # Delay AFTER a real LLM call (not after cache/skip)
         llm_calls += 1
         if llm_calls > 1:
             time.sleep(INTER_REQUEST_DELAY)
@@ -201,23 +203,24 @@ def run_analysis(
         "red_count":     sum(1 for c in unique_changes if c.get("risk_level") == "red"),
     }
 
-    # Synthesis (1 extra LLM call)
     if llm_calls > 0:
         time.sleep(INTER_REQUEST_DELAY)
     synthesis = _synthesize(unique_changes, all_red_zones, api_key, model)
 
     metadata = {
-        "old_file":   old_parsed.get("filename"),
-        "new_file":   new_parsed.get("filename"),
-        "old_chars":  old_parsed.get("char_count"),
-        "new_chars":  new_parsed.get("char_count"),
-        "old_chunks": len(old_chunks),
-        "new_chunks": len(new_chunks),
+        "old_file":        old_parsed.get("filename"),
+        "new_file":        new_parsed.get("filename"),
+        "old_chars":       old_parsed.get("char_count"),
+        "new_chars":       new_parsed.get("char_count"),
+        "old_chunks":      len(old_chunks),
+        "new_chunks":      len(new_chunks),
+        "comparison_type": comparison_type,   # ← NEW
         **metrics,
     }
 
     logger.info(
-        "done total=%d sent=%d cache=%d changes=%d model=%s",
+        "done type=%s total=%d sent=%d cache=%d changes=%d model=%s",
+        comparison_type,
         metrics["chunks_total"], metrics["chunks_sent"],
         metrics["cache_hits"], len(unique_changes),
         metrics["model_used"],
