@@ -55,9 +55,18 @@ header{position:sticky;top:0;z-index:100;background:rgba(10,12,18,.94);backdrop-
 /* MODEL INFO */
 .model-free-badge{display:inline-block;font-size:10px;font-family:var(--fh);font-weight:600;padding:2px 7px;border-radius:4px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);color:var(--gr);margin-left:6px;vertical-align:middle}
 
+/* MODE SWITCHER */
+.mode-switch{display:flex;gap:0;background:var(--bg3);border:1px solid var(--bd2);border-radius:14px;padding:6px;margin-bottom:22px}
+.mode-btn{flex:1;padding:13px 20px;font-family:var(--fh);font-size:12px;font-weight:600;letter-spacing:.3px;border:none;border-radius:10px;cursor:pointer;background:transparent;color:var(--mu);transition:all .25s;display:flex;align-items:center;justify-content:center;gap:8px}
+.mode-btn.active{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;box-shadow:0 4px 16px rgba(59,130,246,.3)}
+.mode-btn .mode-ico{font-size:16px}
+.mode-sub{font-size:10px;opacity:.75;font-weight:400;letter-spacing:0;display:block;margin-top:1px}
+@media(max-width:600px){.mode-btn{flex-direction:column;padding:10px 8px;font-size:10px}}
+
 /* UPLOAD */
 .ug{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
 @media(max-width:600px){.ug{grid-template-columns:1fr}}
+.ug.single{grid-template-columns:1fr;max-width:480px;margin:0 auto 18px}
 .uc{background:var(--bg3);border:1.5px dashed var(--bd2);border-radius:16px;padding:28px 20px;text-align:center;cursor:pointer;transition:all .25s;position:relative;overflow:hidden}
 .uc:hover,.uc.drag{border-color:var(--ac);background:rgba(59,130,246,.04);transform:translateY(-2px)}
 .uc.loaded{border-style:solid;border-color:rgba(59,130,246,.4)}
@@ -70,10 +79,29 @@ header{position:sticky;top:0;z-index:100;background:rgba(10,12,18,.94);backdrop-
 .uf.ok{color:var(--gr)}.uf.err{color:var(--rd)}
 .um{font-size:11px;color:var(--mu);margin-top:3px}
 
+/* MATCH BANNER */
+.match-banner{background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.25);border-left:3px solid var(--gr);border-radius:12px;padding:14px 18px;margin-bottom:18px;display:none}
+.match-banner.show{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.match-ico{font-size:22px;flex-shrink:0}
+.match-info{flex:1}
+.match-label{font-size:11px;color:var(--gr);font-family:var(--fh);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.match-name{font-size:14px;color:var(--tx);font-weight:500}
+.match-score{font-size:11px;color:var(--mu);margin-top:2px}
+.match-score b{color:var(--ac)}
+
+/* PRAVO DB COUNTER */
+.db-status{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--mu);padding:10px 14px;background:var(--bg4);border:1px solid var(--bd);border-radius:8px;margin-bottom:16px}
+.db-dot{width:8px;height:8px;border-radius:50%;background:var(--gr);flex-shrink:0}
+.db-dot.empty{background:var(--rd)}
+.db-link{color:var(--ac);text-decoration:none;font-size:11px;margin-left:auto;white-space:nowrap}
+.db-link:hover{text-decoration:underline}
+
 /* BUTTON */
 .btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:15px;font-family:var(--fh);font-size:13px;font-weight:700;letter-spacing:.5px;color:#fff;background:linear-gradient(135deg,var(--ac),var(--ac2));border:none;border-radius:12px;cursor:pointer;transition:all .25s}
 .btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 28px rgba(59,130,246,.3)}
 .btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn.green-btn{background:linear-gradient(135deg,#16a34a,#15803d)}
+.btn.green-btn:hover:not(:disabled){box-shadow:0 8px 28px rgba(34,197,94,.3)}
 .sp{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
@@ -100,6 +128,24 @@ header{position:sticky;top:0;z-index:100;background:rgba(10,12,18,.94);backdrop-
 .cdot.err{background:var(--rd);border-color:var(--rd)}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
+/* PRAVO UPLOAD MODAL */
+.pravomod{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);padding:24px;overflow-y:auto}
+.pravomod.open{display:flex;align-items:center;justify-content:center}
+.pravomod-inner{width:100%;max-width:580px;background:var(--bg3);border:1px solid var(--bd2);border-radius:16px;padding:28px}
+.pravomod-title{font-family:var(--fh);font-size:16px;font-weight:700;margin-bottom:6px}
+.pravomod-sub{font-size:13px;color:var(--mu);margin-bottom:22px}
+.pravo-dropzone{border:1.5px dashed var(--bd2);border-radius:12px;padding:32px;text-align:center;cursor:pointer;position:relative;transition:all .25s;margin-bottom:14px}
+.pravo-dropzone:hover,.pravo-dropzone.drag{border-color:var(--gr);background:rgba(34,197,94,.04)}
+.pravo-dropzone.loaded{border-color:rgba(34,197,94,.5);border-style:solid}
+.pravo-dropzone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.pravo-queue{max-height:200px;overflow-y:auto;margin-bottom:16px}
+.pravo-item{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bg4);border-radius:8px;margin-bottom:6px;font-size:12px}
+.pravo-item-name{flex:1;color:var(--tx)}
+.pravo-item-status{color:var(--mu);font-size:11px}
+.pravo-item.done .pravo-item-status{color:var(--gr)}
+.pravo-item.fail .pravo-item-status{color:var(--rd)}
+.pravo-item.uploading .pravo-item-status{color:var(--yw)}
+
 /* ERR */
 .err-box{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:13px 16px;color:#fca5a5;font-size:13px;margin-top:14px}
 
@@ -110,6 +156,11 @@ header{position:sticky;top:0;z-index:100;background:rgba(10,12,18,.94);backdrop-
 .res-title{font-family:var(--fh);font-size:20px;font-weight:700}
 .btn-sm{padding:8px 16px;font-family:var(--fh);font-size:11px;font-weight:600;letter-spacing:.5px;color:var(--tx);background:var(--bg3);border:1px solid var(--bd2);border-radius:8px;cursor:pointer;transition:all .2s}
 .btn-sm:hover{border-color:var(--ac);color:var(--ac)}
+
+/* MODE BADGE IN RESULTS */
+.mode-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-family:var(--fh);font-weight:600;padding:4px 11px;border-radius:20px;margin-bottom:12px}
+.mode-badge.auto{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:var(--gr)}
+.mode-badge.manual{background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.3);color:var(--ac)}
 
 /* STATS */
 .sr{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
@@ -206,8 +257,8 @@ header{position:sticky;top:0;z-index:100;background:rgba(10,12,18,.94);backdrop-
   </div>
   <div class="hdr-r">
     <span class="pill p-yellow" id="bpill">⬤ Проверка…</span>
-    <button class="btn-sm" onclick="openHistory()" style="font-size:11px;padding:5px 12px">📂 История</button>
-    <span class="pill p-blue">BSUIR 2026</span>
+    <button class="btn-sm" onclick="openHistory()">📂 История</button>
+    <button class="btn-sm" onclick="openPravoModal()" style="border-color:rgba(34,197,94,.4);color:var(--gr)">🗄 База НПА</button>
   </div>
 </div>
 </div></header>
@@ -216,12 +267,12 @@ header{position:sticky;top:0;z-index:100;background:rgba(10,12,18,.94);backdrop-
 
 <div class="hero">
   <h1>Сравнение редакций<br><span>нормативных правовых актов</span></h1>
-  <p>Извлекает текст, разбивает на структурированные чанки, фильтрует идентичные (ratio&gt;0.95), отправляет изменённые в LLM</p>
+  <p>Загрузите документ — система найдёт актуальную версию в базе pravo.by и покажет все изменения с правовым анализом</p>
   <div class="chips">
     <span class="chip">📄 DOCX / PDF / TXT</span>
+    <span class="chip">🔍 Автопоиск по базе</span>
     <span class="chip">⚡ Diff-фильтр ratio&gt;0.95</span>
     <span class="chip">💾 SHA-256 кэш</span>
-    <span class="chip">🔄 Retry + backoff</span>
     <span class="chip">⚖ Иерархия НПА РБ</span>
   </div>
 </div>
@@ -238,7 +289,7 @@ header{position:sticky;top:0;z-index:100;background:rgba(10,12,18,.94);backdrop-
     <div class="f">
       <label>Модель <span class="model-free-badge">FREE</span></label>
       <select id="model-sel">
-        <option value="openrouter/free">openrouter/free — авто-роутер ⭐ рекомендуется</option>
+        <option value="openrouter/free">openrouter/free — авто-роутер ⭐</option>
         <option value="deepseek/deepseek-r1-distill-qwen-14b:free">DeepSeek R1 14B :free 🧠</option>
         <option value="deepseek/deepseek-r1-0528-qwen3-8b:free">DeepSeek R1 8B :free ⚡</option>
         <option value="meta-llama/llama-3.2-3b-instruct:free">LLaMA 3.2 3B :free</option>
@@ -246,61 +297,124 @@ header{position:sticky;top:0;z-index:100;background:rgba(10,12,18,.94);backdrop-
         <option value="qwen/qwen3-8b:free">Qwen3 8B :free</option>
         <option value="mistralai/mistral-7b-instruct:free">Mistral 7B :free</option>
       </select>
-      <div class="f-note">
-        <b>openrouter/free</b> — авто-выбор любой свободной модели.<br>
-        При 429: retry 3→6→12 сек, потом следующая модель.
-      </div>
     </div>
     <div class="f">
       <label>Backend URL</label>
-      <input type="text" id="burl" value="http://localhost:8000">
-      <div class="f-note">Запустить: <code style="color:var(--ac)">python backend/server.py</code></div>
+      <input type="text" id="burl" value="">
+      <div class="f-note">Оставьте пустым для автоопределения</div>
     </div>
   </div>
 </div>
 
-<!-- UPLOAD -->
-<div class="ug">
-  <div class="uc" id="card-old" ondragover="dov(event,'old')" ondragleave="dlv('old')" ondrop="ddp(event,'old')">
-    <input type="file" accept=".docx,.pdf,.txt" onchange="onf('old',this)">
-    <div class="ui">📄</div>
-    <div class="ul">Старая редакция</div>
-    <div class="uh">Перетащите или кликните · .docx .pdf .txt</div>
-    <div class="uf" id="fn-old"></div>
-    <div class="um" id="fm-old"></div>
-  </div>
-  <div class="uc" id="card-new" ondragover="dov(event,'new')" ondragleave="dlv('new')" ondrop="ddp(event,'new')">
-    <input type="file" accept=".docx,.pdf,.txt" onchange="onf('new',this)">
-    <div class="ui">📋</div>
-    <div class="ul">Новая редакция</div>
-    <div class="uh">Перетащите или кликните · .docx .pdf .txt</div>
-    <div class="uf" id="fn-new"></div>
-    <div class="um" id="fm-new"></div>
-  </div>
+<!-- MODE SWITCHER -->
+<div class="mode-switch">
+  <button class="mode-btn active" id="mode-auto-btn" onclick="setMode('auto')">
+    <span class="mode-ico">🔍</span>
+    <span>
+      Сравнить с базой
+      <span class="mode-sub">Загрузить 1 документ · автопоиск</span>
+    </span>
+  </button>
+  <button class="mode-btn" id="mode-manual-btn" onclick="setMode('manual')">
+    <span class="mode-ico">📋</span>
+    <span>
+      Ручное сравнение
+      <span class="mode-sub">Загрузить 2 документа · сравнить</span>
+    </span>
+  </button>
 </div>
 
-<button class="btn" id="btn-run" onclick="run()" disabled>Анализировать</button>
-
-<!-- PROGRESS -->
-<div class="prog-sec" id="prog" style="display:none">
-  <div class="prog-hdr">
-    <span class="prog-lbl" id="plbl">Подготовка…</span>
-    <span class="prog-pct" id="ppct">0%</span>
+<!-- MODE AUTO -->
+<div id="pane-auto">
+  <div class="db-status" id="db-status">
+    <span class="db-dot empty" id="db-dot"></span>
+    <span id="db-text">Проверка базы pravo.by…</span>
+    <a href="#" class="db-link" onclick="openPravoModal();return false">+ Добавить документы</a>
   </div>
-  <div class="prog-bar"><div class="prog-fill" id="pfill"></div></div>
-  <div class="log" id="log"></div>
-  <div class="chunk-dots" id="cdots"></div>
+
+  <div class="ug single">
+    <div class="uc" id="card-auto" ondragover="dov(event,'auto')" ondragleave="dlv('auto')" ondrop="ddp(event,'auto')">
+      <input type="file" accept=".docx,.pdf,.txt" onchange="onf('auto',this)">
+      <div class="ui">📤</div>
+      <div class="ul">Новая редакция</div>
+      <div class="uh">Перетащите или кликните · .docx .pdf .txt</div>
+      <div class="uf" id="fn-auto"></div>
+      <div class="um" id="fm-auto"></div>
+    </div>
+  </div>
+
+  <button class="btn green-btn" id="btn-auto" onclick="runAuto()" disabled>
+    🔍 Найти в базе и анализировать
+  </button>
+
+  <div class="prog-sec" id="prog-auto" style="display:none">
+    <div class="prog-hdr">
+      <span class="prog-lbl" id="plbl-auto">Подготовка…</span>
+      <span class="prog-pct" id="ppct-auto">0%</span>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" id="pfill-auto"></div></div>
+    <div class="log" id="log-auto"></div>
+    <div class="chunk-dots" id="cdots-auto"></div>
+  </div>
+  <div class="err-box" id="errbox-auto" style="display:none"></div>
 </div>
 
-<div class="err-box" id="errbox" style="display:none"></div>
+<!-- MODE MANUAL -->
+<div id="pane-manual" style="display:none">
+  <div class="ug">
+    <div class="uc" id="card-old" ondragover="dov(event,'old')" ondragleave="dlv('old')" ondrop="ddp(event,'old')">
+      <input type="file" accept=".docx,.pdf,.txt" onchange="onf('old',this)">
+      <div class="ui">📄</div>
+      <div class="ul">Старая редакция</div>
+      <div class="uh">Перетащите или кликните · .docx .pdf .txt</div>
+      <div class="uf" id="fn-old"></div>
+      <div class="um" id="fm-old"></div>
+    </div>
+    <div class="uc" id="card-new" ondragover="dov(event,'new')" ondragleave="dlv('new')" ondrop="ddp(event,'new')">
+      <input type="file" accept=".docx,.pdf,.txt" onchange="onf('new',this)">
+      <div class="ui">📋</div>
+      <div class="ul">Новая редакция</div>
+      <div class="uh">Перетащите или кликните · .docx .pdf .txt</div>
+      <div class="uf" id="fn-new"></div>
+      <div class="um" id="fm-new"></div>
+    </div>
+  </div>
+
+  <button class="btn" id="btn-manual" onclick="runManual()" disabled>Анализировать</button>
+
+  <div class="prog-sec" id="prog-manual" style="display:none">
+    <div class="prog-hdr">
+      <span class="prog-lbl" id="plbl-manual">Подготовка…</span>
+      <span class="prog-pct" id="ppct-manual">0%</span>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" id="pfill-manual"></div></div>
+    <div class="log" id="log-manual"></div>
+    <div class="chunk-dots" id="cdots-manual"></div>
+  </div>
+  <div class="err-box" id="errbox-manual" style="display:none"></div>
+</div>
 
 <!-- RESULTS -->
 <div id="results">
 <div class="div"></div>
 <div class="res-top">
-  <div class="res-title">📊 Результаты анализа</div>
+  <div>
+    <div id="res-mode-badge"></div>
+    <div class="res-title">📊 Результаты анализа</div>
+  </div>
   <button class="btn-sm" onclick="doExport()">⬇ Экспорт .txt</button>
 </div>
+
+<!-- Match banner (auto mode) -->
+<div class="match-banner" id="match-banner">
+  <div class="match-ico">🗄</div>
+  <div class="match-info">
+    <div class="match-label">Найдено в базе pravo.by</div>
+    <div class="match-name" id="match-name">—</div>
+    <div class="match-score" id="match-score">—</div>
+  </div>
+</div>
+
 <div class="sr" id="sr"></div>
 <div class="meta" id="meta"></div>
 <div class="sum" id="sum"></div>
@@ -319,16 +433,13 @@ header{position:sticky;top:0;z-index:100;background:rgba(10,12,18,.94);backdrop-
     <tbody id="ctbody"></tbody>
   </table></div>
 </div>
-
 <div id="p-redzones" class="tp"><div id="rzwrap"></div></div>
-
 <div id="p-track" class="tp">
   <div class="trw">
-    <div class="trh"><div class="trc">Старая редакция</div><div class="trc">Новая редакция</div></div>
+    <div class="trh"><div class="trc" id="track-old-label">Старая редакция</div><div class="trc">Новая редакция</div></div>
     <div class="trs" id="trscroll"></div>
   </div>
 </div>
-
 <div id="p-hier" class="tp">
   <div class="sum" style="margin-bottom:18px">
     <h3>Иерархия законодательства Республики Беларусь</h3>
@@ -336,20 +447,53 @@ header{position:sticky;top:0;z-index:100;background:rgba(10,12,18,.94);backdrop-
   </div>
   <ul class="hl" id="hlist"></ul>
 </div>
-
 <div id="p-chunks" class="tp">
-  <div class="sum" style="margin-bottom:16px">
-    <h3>Анализ по фрагментам</h3>
-    <p id="cmeta"></p>
-  </div>
+  <div class="sum" style="margin-bottom:16px"><h3>Анализ по фрагментам</h3><p id="cmeta"></p></div>
   <div class="cg" id="cgrid"></div>
 </div>
-
 </div><!-- /results -->
+
 </div></main>
 
+<!-- PRAVO UPLOAD MODAL -->
+<div class="pravomod" id="pravo-modal">
+  <div class="pravomod-inner">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+      <div class="pravomod-title">🗄 База документов pravo.by</div>
+      <button class="btn-sm" onclick="closePravoModal()">✕</button>
+    </div>
+    <div class="pravomod-sub">Загрузите документы из pravo.by для автоматического поиска. Можно загружать по одному или несколько сразу.</div>
+
+    <div class="pravo-dropzone" id="pravo-drop" ondragover="pravoDov(event)" ondragleave="pravoDlv()" ondrop="pravoDdp(event)">
+      <input type="file" accept=".docx,.pdf,.txt" multiple onchange="pravoOnf(this)">
+      <div style="font-size:28px;margin-bottom:8px">📂</div>
+      <div style="font-family:var(--fh);font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--gr);margin-bottom:4px">Добавить документы НПА</div>
+      <div style="font-size:12px;color:var(--mu)">Перетащите файлы или кликните · .docx .pdf .txt · несколько файлов</div>
+    </div>
+
+    <div class="pravo-queue" id="pravo-queue" style="display:none"></div>
+
+    <div style="font-family:var(--fh);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--mu);margin-bottom:10px">Документы в базе</div>
+    <div id="pravo-list" style="color:var(--mu);font-size:13px">Загрузка…</div>
+  </div>
+</div>
+
+<!-- HISTORY MODAL -->
+<div id="modal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);padding:24px;overflow-y:auto">
+  <div style="max-width:900px;margin:0 auto;background:var(--bg3);border:1px solid var(--bd2);border-radius:16px;padding:28px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div style="font-family:var(--fh);font-size:18px;font-weight:700">📂 История</div>
+      <button class="btn-sm" onclick="closeHistory()">✕ Закрыть</button>
+    </div>
+    <div style="font-family:var(--fh);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--mu);margin-bottom:12px">Загруженные документы</div>
+    <div id="docs-list" style="margin-bottom:24px"></div>
+    <div style="font-family:var(--fh);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--mu);margin-bottom:12px">Прошлые анализы</div>
+    <div id="analyses-list"></div>
+  </div>
+</div>
+
 <script>
-const HIER = [
+const HIER=[
   'Конституция Республики Беларусь','Решения республиканских референдумов',
   'Законы Республики Беларусь','Декреты и указы Президента Республики Беларусь',
   'Постановления Совета Министров Республики Беларусь',
@@ -359,92 +503,197 @@ const HIER = [
   'НПА иных нормотворческих органов (должностных лиц)','Технические НПА',
 ];
 
-const S = { old: null, new: null, result: null };
+// State
+const S={old:null,new:null,auto:null,result:null,mode:'auto',matchInfo:null};
 
-// ── Backend ──────────────────────────────────────────────
-function burl() { return document.getElementById('burl').value.trim(); }
+// ── Backend URL ──────────────────────────────────────────────────────────────
+function burl(){
+  const v=document.getElementById('burl').value.trim();
+  if(v) return v;
+  // auto-detect: same origin in production, localhost in dev
+  if(location.hostname==='localhost'||location.hostname==='127.0.0.1') return 'http://localhost:8000';
+  return '';
+}
 
-async function checkBackend() {
-  const p = document.getElementById('bpill');
-  try {
-    const r = await fetch(burl() + '/health', { signal: AbortSignal.timeout(2500) });
-    if (r.ok) { p.textContent='⬤ Бэкенд OK'; p.className='pill p-green'; return; }
-  } catch {}
-  p.textContent='⬤ Бэкенд offline'; p.className='pill p-red';
+// ── Backend health ───────────────────────────────────────────────────────────
+async function checkBackend(){
+  const p=document.getElementById('bpill');
+  try{
+    const r=await fetch(burl()+'/health',{signal:AbortSignal.timeout(3000)});
+    if(r.ok){p.textContent='⬤ Бэкенд OK';p.className='pill p-green';loadPravoCount();return;}
+  }catch{}
+  p.textContent='⬤ Бэкенд offline';p.className='pill p-red';
 }
 checkBackend();
-document.getElementById('burl').addEventListener('change', checkBackend);
+document.getElementById('burl').addEventListener('change',checkBackend);
 
-// ── Drag & drop ──────────────────────────────────────────
+// ── Mode ─────────────────────────────────────────────────────────────────────
+function setMode(m){
+  S.mode=m;
+  document.getElementById('pane-auto').style.display=m==='auto'?'block':'none';
+  document.getElementById('pane-manual').style.display=m==='manual'?'block':'none';
+  document.getElementById('mode-auto-btn').classList.toggle('active',m==='auto');
+  document.getElementById('mode-manual-btn').classList.toggle('active',m==='manual');
+  hideErr('auto'); hideErr('manual');
+}
+
+// ── Pravo DB count ───────────────────────────────────────────────────────────
+async function loadPravoCount(){
+  try{
+    const r=await fetch(burl()+'/api/pravo-docs');
+    const d=await r.json();
+    const n=d.count||0;
+    const dot=document.getElementById('db-dot');
+    const txt=document.getElementById('db-text');
+    if(n>0){
+      dot.className='db-dot';
+      txt.innerHTML=`В базе <b style="color:var(--tx)">${n}</b> документ${n===1?'':n<5?'а':'ов'} pravo.by`;
+    } else {
+      dot.className='db-dot empty';
+      txt.innerHTML='База пуста — <span style="color:var(--yw)">добавьте документы из pravo.by</span>';
+    }
+  }catch{}
+}
+
+// ── Drag & drop ──────────────────────────────────────────────────────────────
 function dov(e,w){e.preventDefault();document.getElementById('card-'+w).classList.add('drag')}
 function dlv(w){document.getElementById('card-'+w).classList.remove('drag')}
 function ddp(e,w){e.preventDefault();dlv(w);const f=e.dataTransfer.files[0];if(f)upf(w,f)}
 function onf(w,i){if(i.files[0])upf(w,i.files[0])}
 
-// ── Upload & parse ───────────────────────────────────────
-async function upf(which, file) {
+// ── Upload & parse ───────────────────────────────────────────────────────────
+async function upf(which, file){
   const card=document.getElementById('card-'+which);
   const fn=document.getElementById('fn-'+which);
   const fm=document.getElementById('fm-'+which);
-  card.classList.remove('loaded','fail'); fn.className='uf'; fn.textContent='⏳ Парсинг…'; fm.textContent='';
-  const form=new FormData(); form.append('file',file,file.name);
-  try {
+  card.classList.remove('loaded','fail');
+  fn.className='uf';fn.textContent='⏳ Парсинг…';fm.textContent='';
+  const form=new FormData();form.append('file',file,file.name);
+  try{
     const r=await fetch(burl()+'/api/parse',{method:'POST',body:form});
     const d=await r.json();
     if(!r.ok) throw new Error(d.error||'HTTP '+r.status);
     if(!d.paragraphs?.length) throw new Error('Текст не извлечён из файла');
     S[which]=d;
     card.classList.add('loaded');
-    fn.textContent='✓ '+file.name; fn.className='uf ok';
+    fn.textContent='✓ '+file.name;fn.className='uf ok';
     fm.textContent=`${d.char_count.toLocaleString()} симв. · ${d.para_count} абз. · ${d.chunks?.length||0} чанков`;
-  } catch(e) {
+  }catch(err){
     card.classList.add('fail');
-    fn.textContent='✗ '+e.message; fn.className='uf err';
+    fn.textContent='✗ '+err.message;fn.className='uf err';
     S[which]=null;
   }
   chkReady();
 }
 
-function chkReady(){ document.getElementById('btn-run').disabled=!(S.old&&S.new); }
-
-// ── Chunk progress dots ──────────────────────────────────
-let dotCount=0;
-function initDots(n){
-  dotCount=n;
-  const el=document.getElementById('cdots');
-  el.innerHTML=Array.from({length:n},(_,i)=>`<div class="cdot" id="dot-${i}" title="Чанк ${i+1}"></div>`).join('');
+function chkReady(){
+  document.getElementById('btn-auto').disabled=!S.auto;
+  document.getElementById('btn-manual').disabled=!(S.old&&S.new);
 }
-function setDot(i,cls){ const d=document.getElementById('dot-'+i); if(d){d.className='cdot '+cls;} }
 
-// ── Run ──────────────────────────────────────────────────
-async function run() {
+// ── Chunk dots ────────────────────────────────────────────────────────────────
+function initDots(n,sfx){
+  const el=document.getElementById('cdots-'+sfx);
+  el.innerHTML=Array.from({length:n},(_,i)=>`<div class="cdot" id="dot-${sfx}-${i}"></div>`).join('');
+}
+function setDot(i,cls,sfx){const d=document.getElementById('dot-'+sfx+'-'+i);if(d)d.className='cdot '+cls;}
+
+// ── Run AUTO ─────────────────────────────────────────────────────────────────
+async function runAuto(){
   const apiKey=document.getElementById('api-key').value.trim();
-  if(!apiKey){showErr('Введите API-ключ OpenRouter');return;}
-  hideErr(); setLoading(true); showProg(true);
-  document.getElementById('results').classList.remove('show');
+  if(!apiKey){showErr('auto','Введите API-ключ OpenRouter');return;}
+  if(!S.auto){showErr('auto','Загрузите документ');return;}
+
+  hideErr('auto');
+  setLoading('auto',true);
+  showProg('auto',true);
+  setStep('auto',5,'Загрузка файла…');
+  S.matchInfo=null;
 
   const model=document.getElementById('model-sel').value||'openrouter/free';
-  const totalChunks=Math.min(Math.max(S.old.chunks?.length||0,S.new.chunks?.length||0),12);
+  const totalChunks=Math.min(S.auto.chunks?.length||5,12);
+  initDots(totalChunks,'auto');
+  addLog('auto',`Файл: ${S.auto.filename} (${S.auto.chunks?.length||0} чанков)`);
+  addLog('auto','Поиск похожего документа в базе pravo.by…');
 
-  initDots(totalChunks);
-  setStep(5,'Отправляю на анализ…');
-  addLog(`Старая: ${S.old.filename} (${S.old.chunks?.length||0} чанков)`);
-  addLog(`Новая:  ${S.new.filename} (${S.new.chunks?.length||0} чанков)`);
-  addLog(`Будет обработано: до ${totalChunks} чанков · задержка 1.5с между LLM-запросами`);
-
-  // Simulate dot updates while waiting (backend processes sequentially)
   let dotIdx=0;
   const dotTimer=setInterval(()=>{
     if(dotIdx<totalChunks){
-      // Mark previous as done
-      if(dotIdx>0) setDot(dotIdx-1,'done');
-      setDot(dotIdx,'sending');
-      setStep(5+Math.round(85*dotIdx/totalChunks), `Анализирую чанк ${dotIdx+1}/${totalChunks}…`);
+      if(dotIdx>0) setDot(dotIdx-1,'done','auto');
+      setDot(dotIdx,'sending','auto');
+      setStep('auto',10+Math.round(80*dotIdx/totalChunks),`Анализирую чанк ${dotIdx+1}/${totalChunks}…`);
       dotIdx++;
     }
-  }, 2000);
+  },2200);
 
-  try {
+  try{
+    const form=new FormData();
+    // Re-fetch the file object — get it from the card's input
+    const inp=document.querySelector('#card-auto input[type=file]');
+    if(!inp.files[0]) throw new Error('Файл не выбран');
+    form.append('file',inp.files[0],inp.files[0].name);
+    form.append('apiKey',apiKey);
+    form.append('model',model);
+
+    setStep('auto',8,'Поиск в базе pravo.by…');
+    const r=await fetch(burl()+'/api/analyze-auto',{method:'POST',body:form});
+    const data=await r.json();
+    clearInterval(dotTimer);
+    if(!r.ok) throw new Error(data.error||'HTTP '+r.status);
+
+    for(let i=0;i<totalChunks;i++) setDot(i,'done','auto');
+    setStep('auto',100,'Готово ✓');
+    addLog('auto','Анализ завершён','ok');
+    const m=data.metadata||{};
+    addLog('auto',`Чанков: ${m.chunks_total||0} · LLM: ${m.chunks_sent||0} · Кэш: ${m.cache_hits||0}`,'ok');
+    if(data.match){
+      S.matchInfo=data.match;
+      addLog('auto',`Найдено в базе: ${data.match.title||data.match.filename} (схожесть ${(data.match.score*100).toFixed(0)}%)`,'ok');
+    }
+
+    S.result=data;
+    renderAll(data,'auto');
+    document.getElementById('results').classList.add('show');
+    document.getElementById('results').scrollIntoView({behavior:'smooth'});
+  }catch(err){
+    clearInterval(dotTimer);
+    for(let i=0;i<totalChunks;i++) setDot(i,'err','auto');
+    showErr('auto',err.message);
+    addLog('auto','Ошибка: '+err.message,'err');
+  }finally{
+    setLoading('auto',false);showProg('auto',false);
+  }
+}
+
+// ── Run MANUAL ────────────────────────────────────────────────────────────────
+async function runManual(){
+  const apiKey=document.getElementById('api-key').value.trim();
+  if(!apiKey){showErr('manual','Введите API-ключ OpenRouter');return;}
+  if(!S.old||!S.new){showErr('manual','Загрузите оба документа');return;}
+
+  hideErr('manual');
+  setLoading('manual',true);
+  showProg('manual',true);
+  setStep('manual',5,'Подготовка…');
+  S.matchInfo=null;
+
+  const model=document.getElementById('model-sel').value||'openrouter/free';
+  const totalChunks=Math.min(Math.max(S.old.chunks?.length||0,S.new.chunks?.length||0),12);
+  initDots(totalChunks,'manual');
+  addLog('manual',`Старая: ${S.old.filename} (${S.old.chunks?.length||0} чанков)`);
+  addLog('manual',`Новая:  ${S.new.filename} (${S.new.chunks?.length||0} чанков)`);
+
+  let dotIdx=0;
+  const dotTimer=setInterval(()=>{
+    if(dotIdx<totalChunks){
+      if(dotIdx>0) setDot(dotIdx-1,'done','manual');
+      setDot(dotIdx,'sending','manual');
+      setStep('manual',5+Math.round(85*dotIdx/totalChunks),`Анализирую чанк ${dotIdx+1}/${totalChunks}…`);
+      dotIdx++;
+    }
+  },2000);
+
+  try{
     const r=await fetch(burl()+'/api/analyze',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
@@ -454,32 +703,57 @@ async function run() {
     clearInterval(dotTimer);
     if(!r.ok) throw new Error(data.error||'HTTP '+r.status);
 
-    // Mark all dots done
-    for(let i=0;i<totalChunks;i++) setDot(i,'done');
-    setStep(100,'Готово ✓'); addLog('Анализ завершён', 'ok');
+    for(let i=0;i<totalChunks;i++) setDot(i,'done','manual');
+    setStep('manual',100,'Готово ✓');
+    addLog('manual','Анализ завершён','ok');
     const m=data.metadata||{};
-    addLog(`Чанков: ${m.chunks_total||0} · LLM: ${m.chunks_sent||0} · Кэш: ${m.cache_hits||0} · Пропущено diff: ${(m.chunks_total||0)-(m.chunks_sent||0)-(m.cache_hits||0)}`,'ok');
-    addLog(`Модель: ${m.model_used||'—'}`,'ok');
+    addLog('manual',`Чанков: ${m.chunks_total||0} · LLM: ${m.chunks_sent||0} · Кэш: ${m.cache_hits||0} · Модель: ${m.model_used||'—'}`,'ok');
 
     S.result=data;
-    renderAll(data);
+    renderAll(data,'manual');
     document.getElementById('results').classList.add('show');
     document.getElementById('results').scrollIntoView({behavior:'smooth'});
-
-  } catch(e) {
+  }catch(err){
     clearInterval(dotTimer);
-    for(let i=0;i<dotCount;i++) setDot(i,'err');
-    showErr(e.message); addLog('Ошибка: '+e.message,'err');
-  } finally {
-    setLoading(false); showProg(false);
+    for(let i=0;i<totalChunks;i++) setDot(i,'err','manual');
+    showErr('manual',err.message);
+    addLog('manual','Ошибка: '+err.message,'err');
+  }finally{
+    setLoading('manual',false);showProg('manual',false);
   }
 }
 
-// ── Render ───────────────────────────────────────────────
-function renderAll(r){
-  rStats(r.stats); rMeta(r.metadata); rSum(r.synthesis,r.stats);
-  rChanges(r.changes); rRZ(r.red_zones); rTrack(r.changes);
-  rHier(r.synthesis?.hierarchy_check); rChunks(r.metadata,r.chunk_results);
+// ── Render ───────────────────────────────────────────────────────────────────
+function renderAll(r, mode){
+  // Mode badge
+  const badge=document.getElementById('res-mode-badge');
+  if(mode==='auto'){
+    badge.innerHTML='<span class="mode-badge auto">🔍 Автопоиск по базе</span>';
+  } else {
+    badge.innerHTML='<span class="mode-badge manual">📋 Ручное сравнение</span>';
+  }
+
+  // Match banner
+  const banner=document.getElementById('match-banner');
+  if(mode==='auto'&&r.match){
+    document.getElementById('match-name').textContent=r.match.title||r.match.filename;
+    document.getElementById('match-score').innerHTML=
+      `Схожесть: <b>${(r.match.score*100).toFixed(1)}%</b> · ID: ${(r.match.doc_id||'').slice(0,12)}…`;
+    banner.classList.add('show');
+    document.getElementById('track-old-label').textContent=r.match.title||r.match.filename;
+  } else {
+    banner.classList.remove('show');
+    document.getElementById('track-old-label').textContent='Старая редакция';
+  }
+
+  rStats(r.stats);
+  rMeta(r.metadata);
+  rSum(r.synthesis,r.stats);
+  rChanges(r.changes);
+  rRZ(r.red_zones);
+  rTrack(r.changes);
+  rHier(r.synthesis?.hierarchy_check);
+  rChunks(r.metadata,r.chunk_results);
 }
 
 function rStats(s){
@@ -492,10 +766,12 @@ function rStats(s){
 
 function rMeta(m){
   const skip=(m.chunks_total||0)-(m.chunks_sent||0)-(m.cache_hits||0);
+  const typeLabel=m.comparison_type==='auto'?'🔍 Автопоиск':'📋 Ручное';
   document.getElementById('meta').innerHTML=`
     <span>📄 <span class="mv">${e(m.old_file)}</span> → <span class="mv">${e(m.new_file)}</span></span>
+    <span>🔄 Режим: <span class="mv">${typeLabel}</span></span>
     <span>📦 Чанков: <span class="mv">${m.chunks_total}</span></span>
-    <span>⚡ Diff-пропущено: <span class="mv">${skip>0?skip:'0'}</span></span>
+    <span>⚡ Diff-пропущено: <span class="mv">${skip>0?skip:0}</span></span>
     <span>💾 Из кэша: <span class="mv">${m.cache_hits}</span></span>
     <span>🤖 В LLM: <span class="mv">${m.chunks_sent}</span></span>
     <span>🏷 Модель: <span class="mv">${e(m.model_used||'—')}</span></span>`;
@@ -550,7 +826,7 @@ function rHier(check){
   document.getElementById('hlist').innerHTML=HIER.map((name,i)=>{
     const item=(check||[]).find(h=>h.level&&h.level.toLowerCase().includes(name.toLowerCase().slice(0,14)))||(check||[])[i]||{};
     const st=item.status||'not_applicable';
-    return `<li class="hi">
+    return`<li class="hi">
       <div class="hn">${i+1}</div>
       <div class="hb"><div class="hname">${e(name)}</div>${item.note?`<div class="hnote">${e(item.note)}</div>`:''}</div>
       <div class="hst"><span class="sp2 ${st}">${sm[st]||st}</span></div>
@@ -558,83 +834,157 @@ function rHier(check){
   }).join('');
 }
 
-function rChunks(m, chunkResults){
-  const total=m.chunks_total||0, sent=m.chunks_sent||0, cached=m.cache_hits||0, skip=total-sent-cached;
-  document.getElementById('cmeta').textContent=
-    `Всего: ${total} · Пропущено diff: ${skip} · Из кэша: ${cached} · Отправлено в LLM: ${sent}`;
+function rChunks(m,chunkResults){
+  const total=m.chunks_total||0,sent=m.chunks_sent||0,cached=m.cache_hits||0,skip=total-sent-cached;
+  document.getElementById('cmeta').textContent=`Всего: ${total} · Diff-пропущено: ${skip} · Из кэша: ${cached} · LLM: ${sent}`;
   const grid=document.getElementById('cgrid');
   if(!total){grid.innerHTML='<div style="color:var(--mu);font-size:13px">Нет данных</div>';return;}
   const items=[];
   for(let i=0;i<total;i++){
     const cr=chunkResults?.[i];
-    let cls='', label='', color='var(--mu)';
-    if(cr){
-      cls=cr.has_changes!==false?'changed':'';
-      label=cr.has_changes!==false?`⚡ ${(cr.changes||[]).length} изм.`:'✓ Без изменений';
-      color=cr.has_changes!==false?'var(--yw)':'var(--gr)';
-    } else if(i<cached){
-      cls='cached'; label='💾 Из кэша'; color='var(--ac)';
-    } else if(i>=sent+cached){
-      cls='skipped'; label='⚡ diff-пропущен'; color='var(--mu)';
-    } else {
-      label='— нет данных'; color='var(--mu)';
-    }
-    items.push(`<div class="cc ${cls}">
-      <div class="ci">Чанк #${i+1}</div>
-      <div class="cs">${cr?.summary?e(cr.summary.slice(0,100)):'—'}</div>
-      <div class="cn" style="color:${color}">${label}</div>
-    </div>`);
+    let cls='',label='',color='var(--mu)';
+    if(cr){cls=cr.has_changes!==false?'changed':'';label=cr.has_changes!==false?`⚡ ${(cr.changes||[]).length} изм.`:'✓ Без изменений';color=cr.has_changes!==false?'var(--yw)':'var(--gr)';}
+    else if(i<cached){cls='cached';label='💾 Из кэша';color='var(--ac)';}
+    else if(i>=sent+cached){cls='skipped';label='⚡ diff-пропущен';color='var(--mu)';}
+    else{label='— нет данных';}
+    items.push(`<div class="cc ${cls}"><div class="ci">Чанк #${i+1}</div><div class="cs">${cr?.summary?e(cr.summary.slice(0,100)):'—'}</div><div class="cn" style="color:${color}">${label}</div></div>`);
   }
   grid.innerHTML=items.join('');
 }
 
-// ── UI helpers ───────────────────────────────────────────
+// ── UI helpers ────────────────────────────────────────────────────────────────
 function stab(btn){
   document.querySelectorAll('.tb').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.tp').forEach(p=>p.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('p-'+btn.dataset.tab).classList.add('active');
 }
-function setLoading(on){
-  const b=document.getElementById('btn-run');
-  b.disabled=on; b.innerHTML=on?'<div class="sp"></div> Анализирую…':'Анализировать';
+function setLoading(sfx,on){
+  const b=document.getElementById('btn-'+sfx);
+  b.disabled=on;
+  if(sfx==='auto') b.innerHTML=on?'<div class="sp"></div> Ищу и анализирую…':'🔍 Найти в базе и анализировать';
+  else b.innerHTML=on?'<div class="sp"></div> Анализирую…':'Анализировать';
   if(!on) chkReady();
 }
-function showProg(on){
-  document.getElementById('prog').style.display=on?'block':'none';
-  if(on){document.getElementById('log').innerHTML=''; document.getElementById('cdots').innerHTML='';}
+function showProg(sfx,on){
+  document.getElementById('prog-'+sfx).style.display=on?'block':'none';
+  if(on){document.getElementById('log-'+sfx).innerHTML='';document.getElementById('cdots-'+sfx).innerHTML='';}
 }
-function setStep(pct,msg){
-  document.getElementById('pfill').style.width=pct+'%';
-  document.getElementById('ppct').textContent=pct+'%';
-  document.getElementById('plbl').textContent=msg;
+function setStep(sfx,pct,msg){
+  document.getElementById('pfill-'+sfx).style.width=pct+'%';
+  document.getElementById('ppct-'+sfx).textContent=pct+'%';
+  document.getElementById('plbl-'+sfx).textContent=msg;
 }
-function addLog(msg,cls=''){
-  const box=document.getElementById('log');
-  const el=document.createElement('div'); el.className='ll '+cls;
+function addLog(sfx,msg,cls=''){
+  const box=document.getElementById('log-'+sfx);
+  const el=document.createElement('div');el.className='ll '+cls;
   el.innerHTML=`<span class="ld"></span>${e(msg)}`;
-  box.appendChild(el); box.scrollTop=box.scrollHeight;
+  box.appendChild(el);box.scrollTop=box.scrollHeight;
 }
-function showErr(msg){const el=document.getElementById('errbox');el.style.display='block';el.textContent='⚠ '+msg;}
-function hideErr(){document.getElementById('errbox').style.display='none';}
+function showErr(sfx,msg){
+  const el=document.getElementById('errbox-'+sfx);
+  el.style.display='block';el.textContent='⚠ '+msg;
+}
+function hideErr(sfx){document.getElementById('errbox-'+sfx).style.display='none';}
 function rb(l){const labels={green:'Безопасно',yellow:'Проверить',red:'Противоречие'};const lv=l||'yellow';return`<span class="rb ${lv}"><span class="rd"></span>${labels[lv]||lv}</span>`;}
 function e(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
-// ── Export ───────────────────────────────────────────────
+// ── Pravo Modal ───────────────────────────────────────────────────────────────
+function openPravoModal(){
+  document.getElementById('pravo-modal').classList.add('open');
+  loadPravoList();
+}
+function closePravoModal(){
+  document.getElementById('pravo-modal').classList.remove('open');
+  loadPravoCount();
+}
+
+function pravoDov(e){e.preventDefault();document.getElementById('pravo-drop').classList.add('drag');}
+function pravoDlv(){document.getElementById('pravo-drop').classList.remove('drag');}
+function pravoDdp(e){e.preventDefault();pravoDlv();const files=[...e.dataTransfer.files];if(files.length)uploadPravoBatch(files);}
+function pravoOnf(inp){if(inp.files.length)uploadPravoBatch([...inp.files]);}
+
+async function uploadPravoBatch(files){
+  const queue=document.getElementById('pravo-queue');
+  queue.style.display='block';
+  const apiKey=document.getElementById('api-key').value.trim();
+
+  for(const file of files){
+    const item=document.createElement('div');
+    item.className='pravo-item uploading';
+    item.innerHTML=`<span class="pravo-item-name">${e(file.name)}</span><span class="pravo-item-status">⏳ Загрузка…</span>`;
+    queue.appendChild(item);
+
+    try{
+      const form=new FormData();
+      form.append('file',file,file.name);
+      form.append('title',file.name.replace(/\.[^.]+$/,''));
+      const r=await fetch(burl()+'/api/upload-pravo',{method:'POST',body:form});
+      const d=await r.json();
+      if(!r.ok) throw new Error(d.error||'HTTP '+r.status);
+      item.className='pravo-item done';
+      item.querySelector('.pravo-item-status').textContent=`✓ ${(d.char_count/1000).toFixed(1)}k симв.`;
+    }catch(err){
+      item.className='pravo-item fail';
+      item.querySelector('.pravo-item-status').textContent='✗ '+err.message;
+    }
+  }
+  loadPravoList();
+}
+
+async function loadPravoList(){
+  const el=document.getElementById('pravo-list');
+  el.innerHTML='<div style="color:var(--mu);font-size:13px">Загрузка…</div>';
+  try{
+    const r=await fetch(burl()+'/api/pravo-docs');
+    const d=await r.json();
+    if(!d.documents?.length){
+      el.innerHTML='<div style="color:var(--mu);font-size:13px;padding:10px 0">База пуста. Загрузите документы выше.</div>';
+      return;
+    }
+    el.innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:12px">
+      <thead><tr>
+        <th style="text-align:left;padding:8px 10px;color:var(--mu);border-bottom:1px solid var(--bd);font-family:var(--fh);font-size:10px;font-weight:600;text-transform:uppercase">Документ</th>
+        <th style="text-align:left;padding:8px 10px;color:var(--mu);border-bottom:1px solid var(--bd);font-family:var(--fh);font-size:10px;font-weight:600;text-transform:uppercase">Размер</th>
+        <th style="text-align:left;padding:8px 10px;color:var(--mu);border-bottom:1px solid var(--bd);font-family:var(--fh);font-size:10px;font-weight:600;text-transform:uppercase">Дата</th>
+        <th style="padding:8px 10px;border-bottom:1px solid var(--bd)"></th>
+      </tr></thead>
+      <tbody>${d.documents.map(doc=>`
+        <tr>
+          <td style="padding:8px 10px;color:var(--tx)">${e(doc.title||doc.filename)}</td>
+          <td style="padding:8px 10px;color:var(--mu)">${(doc.char_count/1000).toFixed(1)}k симв.</td>
+          <td style="padding:8px 10px;color:var(--mu)">${new Date(doc.created_at*1000).toLocaleDateString('ru')}</td>
+          <td style="padding:8px 10px">
+            <button onclick="deletePravoDoc('${doc.id}')" style="font-size:11px;padding:3px 8px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--rd);border-radius:5px;cursor:pointer">✕</button>
+          </td>
+        </tr>`).join('')}</tbody>
+    </table>`;
+  }catch(err){el.innerHTML=`<div style="color:var(--rd);font-size:13px">Ошибка: ${err.message}</div>`;}
+}
+
+async function deletePravoDoc(docId){
+  if(!confirm('Удалить документ из базы?')) return;
+  await fetch(burl()+'/api/documents/'+docId,{method:'DELETE'});
+  loadPravoList();
+}
+
+// ── Export ────────────────────────────────────────────────────────────────────
 function doExport(){
   if(!S.result) return;
-  const r=S.result, m=r.metadata;
-  const skip=(m.chunks_total||0)-(m.chunks_sent||0)-(m.cache_hits||0);
-  let txt=`ОТЧЁТ СРАВНЕНИЯ РЕДАКЦИЙ НПА — ЛексАнализ v1.0
+  const r=S.result,m=r.metadata||{};
+  const typeLabel=m.comparison_type==='auto'?'Автопоиск по базе':'Ручное сравнение';
+  const matchLine=S.matchInfo?`Найдено в базе: ${S.matchInfo.title||S.matchInfo.filename} (схожесть ${(S.matchInfo.score*100).toFixed(0)}%)\n`:'';
+  let txt=`ОТЧЁТ СРАВНЕНИЯ РЕДАКЦИЙ НПА — ЛексАнализ v3
 Дата: ${new Date().toLocaleString('ru')}
-Старая редакция: ${m.old_file}
-Новая редакция:  ${m.new_file}
+Режим: ${typeLabel}
+${matchLine}Старая редакция: ${m.old_file||'—'}
+Новая редакция:  ${m.new_file||'—'}
 Модель:          ${m.model_used||'—'}
-Чанков: ${m.chunks_total} | Diff-пропущено: ${skip} | Кэш: ${m.cache_hits} | LLM: ${m.chunks_sent}
+Чанков: ${m.chunks_total||0} | LLM: ${m.chunks_sent||0} | Кэш: ${m.cache_hits||0}
 ${'═'.repeat(60)}\n\nРЕЗЮМЕ\n${r.synthesis?.executive_summary||'—'}\n\n`;
-  txt+=`СТАТИСТИКА\nВсего: ${r.stats.total_changes} | Зелёных: ${r.stats.green_count} | Жёлтых: ${r.stats.yellow_count} | Красных: ${r.stats.red_count}\n\n`;
+  txt+=`СТАТИСТИКА\nВсего: ${r.stats?.total_changes} | Зелёных: ${r.stats?.green_count} | Жёлтых: ${r.stats?.yellow_count} | Красных: ${r.stats?.red_count}\n\n`;
   txt+='═'.repeat(60)+'\nТАБЛИЦА ИЗМЕНЕНИЙ\n'+'═'.repeat(60)+'\n';
-  (r.changes||[]).forEach((c,i)=>{txt+=`\n${i+1}. ${c.clause||'—'}\n   Было:    ${c.old_text||'—'}\n   Стало:   ${c.new_text||'—'}\n   Тип:     ${c.change_type||'—'}\n   Риск:    ${(c.risk_level||'').toUpperCase()}\n   Статья:  ${c.law_reference||'—'}\n   Реком.:  ${c.recommendation||'—'}\n`;});
+  (r.changes||[]).forEach((c,i)=>{txt+=`\n${i+1}. ${c.clause||'—'}\n   Было:    ${c.old_text||'—'}\n   Стало:   ${c.new_text||'—'}\n   Тип:     ${c.change_type||'—'}\n   Риск:    ${(c.risk_level||'').toUpperCase()}\n   Реком.:  ${c.recommendation||'—'}\n`;});
   txt+='\n'+'═'.repeat(60)+'\nКРАСНЫЕ ЗОНЫ\n'+'═'.repeat(60)+'\n';
   if(!(r.red_zones?.length)) txt+='Не обнаружено.\n';
   else r.red_zones.forEach((z,i)=>{txt+=`\n${i+1}. ${z.clause||'—'}\n   ${z.description||'—'}\n   Норма: ${z.law_reference||'—'}\n`;});
@@ -643,103 +993,87 @@ ${'═'.repeat(60)}\n\nРЕЗЮМЕ\n${r.synthesis?.executive_summary||'—'}\n\
   txt+='\n— ЛексАнализ | https://pravo.by\n';
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain;charset=utf-8'}));
-  a.download=`Анализ_НПА_${new Date().toISOString().slice(0,10)}.txt`; a.click();
+  a.download=`Анализ_НПА_${new Date().toISOString().slice(0,10)}.txt`;a.click();
 }
-</script>
-<!-- HISTORY MODAL -->
-<div id="modal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);padding:24px;overflow-y:auto">
-  <div style="max-width:900px;margin:0 auto;background:var(--bg3);border:1px solid var(--bd2);border-radius:16px;padding:28px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-      <div style="font-family:var(--fh);font-size:18px;font-weight:700">📂 История документов и анализов</div>
-      <button class="btn-sm" onclick="closeHistory()">✕ Закрыть</button>
-    </div>
 
-    <div style="font-family:var(--fh);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--mu);margin-bottom:12px">Загруженные документы</div>
-    <div id="docs-list" style="margin-bottom:24px"></div>
-
-    <div style="font-family:var(--fh);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--mu);margin-bottom:12px">Прошлые анализы</div>
-    <div id="analyses-list"></div>
-  </div>
-</div>
-
-<script>
-async function openHistory() {
-  document.getElementById('modal').style.display = 'block';
-  await Promise.all([loadDocs(), loadAnalyses()]);
+// ── History ───────────────────────────────────────────────────────────────────
+async function openHistory(){
+  document.getElementById('modal').style.display='block';
+  await Promise.all([loadDocs(),loadAnalyses()]);
 }
-function closeHistory() { document.getElementById('modal').style.display = 'none'; }
+function closeHistory(){document.getElementById('modal').style.display='none';}
 
-async function loadDocs() {
-  const el = document.getElementById('docs-list');
-  el.innerHTML = '<div style="color:var(--mu);font-size:13px">Загрузка…</div>';
-  try {
-    const r = await fetch(burl() + '/api/documents');
-    const d = await r.json();
-    if (!d.documents?.length) { el.innerHTML = '<div style="color:var(--mu);font-size:13px">Нет документов</div>'; return; }
-    el.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:12px">
+async function loadDocs(){
+  const el=document.getElementById('docs-list');
+  el.innerHTML='<div style="color:var(--mu);font-size:13px">Загрузка…</div>';
+  try{
+    const r=await fetch(burl()+'/api/documents');
+    const d=await r.json();
+    if(!d.documents?.length){el.innerHTML='<div style="color:var(--mu);font-size:13px">Нет документов</div>';return;}
+    el.innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:12px">
       <thead><tr>
         <th style="text-align:left;padding:8px 10px;color:var(--mu);border-bottom:1px solid var(--bd);font-family:var(--fh);font-size:10px;font-weight:600;text-transform:uppercase">Файл</th>
+        <th style="text-align:left;padding:8px 10px;color:var(--mu);border-bottom:1px solid var(--bd);font-family:var(--fh);font-size:10px;font-weight:600;text-transform:uppercase">Источник</th>
         <th style="text-align:left;padding:8px 10px;color:var(--mu);border-bottom:1px solid var(--bd);font-family:var(--fh);font-size:10px;font-weight:600;text-transform:uppercase">Размер</th>
-        <th style="text-align:left;padding:8px 10px;color:var(--mu);border-bottom:1px solid var(--bd);font-family:var(--fh);font-size:10px;font-weight:600;text-transform:uppercase">Чанков</th>
         <th style="text-align:left;padding:8px 10px;color:var(--mu);border-bottom:1px solid var(--bd);font-family:var(--fh);font-size:10px;font-weight:600;text-transform:uppercase">Дата</th>
         <th style="padding:8px 10px;border-bottom:1px solid var(--bd)"></th>
       </tr></thead>
-      <tbody>${d.documents.map(doc => `
-        <tr style="border-bottom:1px solid var(--bd)">
-          <td style="padding:8px 10px;color:var(--tx)">${e(doc.filename)}</td>
+      <tbody>${d.documents.map(doc=>`
+        <tr>
+          <td style="padding:8px 10px;color:var(--tx)">${e(doc.title||doc.filename)}</td>
+          <td style="padding:8px 10px"><span style="font-size:10px;padding:2px 7px;border-radius:4px;${doc.source==='pravo'?'background:rgba(34,197,94,.1);color:var(--gr)':'background:rgba(59,130,246,.1);color:var(--ac)'}">${doc.source==='pravo'?'pravo.by':'загрузка'}</span></td>
           <td style="padding:8px 10px;color:var(--mu)">${(doc.char_count/1000).toFixed(1)}k симв.</td>
-          <td style="padding:8px 10px;color:var(--mu)">${doc.para_count} абз.</td>
           <td style="padding:8px 10px;color:var(--mu)">${new Date(doc.created_at*1000).toLocaleString('ru')}</td>
           <td style="padding:8px 10px">
             <button onclick="deleteDoc('${doc.id}')" style="font-size:11px;padding:3px 8px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--rd);border-radius:5px;cursor:pointer">Удалить</button>
           </td>
         </tr>`).join('')}</tbody>
     </table>`;
-  } catch(err) { el.innerHTML = `<div style="color:var(--rd);font-size:13px">Ошибка: ${err.message}</div>`; }
+  }catch(err){el.innerHTML=`<div style="color:var(--rd);font-size:13px">Ошибка: ${err.message}</div>`;}
 }
 
-async function loadAnalyses() {
-  const el = document.getElementById('analyses-list');
-  el.innerHTML = '<div style="color:var(--mu);font-size:13px">Загрузка…</div>';
-  try {
-    const r = await fetch(burl() + '/api/analyses');
-    const d = await r.json();
-    if (!d.analyses?.length) { el.innerHTML = '<div style="color:var(--mu);font-size:13px">Нет анализов</div>'; return; }
-    el.innerHTML = d.analyses.map(a => `
+async function loadAnalyses(){
+  const el=document.getElementById('analyses-list');
+  el.innerHTML='<div style="color:var(--mu);font-size:13px">Загрузка…</div>';
+  try{
+    const r=await fetch(burl()+'/api/analyses');
+    const d=await r.json();
+    if(!d.analyses?.length){el.innerHTML='<div style="color:var(--mu);font-size:13px">Нет анализов</div>';return;}
+    el.innerHTML=d.analyses.map(a=>`
       <div style="background:var(--bg4);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;margin-bottom:10px">
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
           <div>
             <div style="font-size:13px;color:var(--tx);font-weight:500">${e(a.old_filename)} → ${e(a.new_filename)}</div>
             <div style="font-size:11px;color:var(--mu);margin-top:3px">
-              🤖 ${e(a.model_used||'—')} ·
-              ${new Date(a.created_at*1000).toLocaleString('ru')} ·
+              🤖 ${e(a.model_used||'—')} · ${new Date(a.created_at*1000).toLocaleString('ru')} ·
               <span style="color:var(--rd)">⬤ ${a.stats?.red_count||0}</span>
               <span style="color:var(--yw)"> ⬤ ${a.stats?.yellow_count||0}</span>
               <span style="color:var(--gr)"> ⬤ ${a.stats?.green_count||0}</span>
             </div>
           </div>
-          <button onclick="loadAnalysis('${a.id}')" class="btn-sm" style="font-size:11px">Открыть</button>
+          <button onclick="loadAnalysis('${a.id}')" class="btn-sm">Открыть</button>
         </div>
       </div>`).join('');
-  } catch(err) { el.innerHTML = `<div style="color:var(--rd);font-size:13px">Ошибка: ${err.message}</div>`; }
+  }catch(err){el.innerHTML=`<div style="color:var(--rd);font-size:13px">Ошибка: ${err.message}</div>`;}
 }
 
-async function deleteDoc(docId) {
-  if (!confirm('Удалить документ?')) return;
-  await fetch(burl() + '/api/documents/' + docId, {method:'DELETE'});
+async function deleteDoc(docId){
+  if(!confirm('Удалить документ?')) return;
+  await fetch(burl()+'/api/documents/'+docId,{method:'DELETE'});
   await loadDocs();
 }
 
-async function loadAnalysis(analysisId) {
+async function loadAnalysis(analysisId){
   closeHistory();
-  try {
-    const r = await fetch(burl() + '/api/analyses/' + analysisId);
-    const data = await r.json();
-    S.result = data;
-    renderAll(data);
+  try{
+    const r=await fetch(burl()+'/api/analyses/'+analysisId);
+    const data=await r.json();
+    S.result=data;
+    S.matchInfo=null;
+    renderAll(data,'manual');
     document.getElementById('results').classList.add('show');
     document.getElementById('results').scrollIntoView({behavior:'smooth'});
-  } catch(err) { showErr('Ошибка загрузки: ' + err.message); }
+  }catch(err){alert('Ошибка загрузки: '+err.message);}
 }
 </script>
 </body>
