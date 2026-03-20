@@ -245,6 +245,63 @@ header{position:sticky;top:0;z-index:100;background:rgba(10,12,18,.94);backdrop-
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:3px}
+
+/* ── GIT DIFF TAB ──────────────────────────────────────────────────────────── */
+.gdt-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.gdt-vt{display:flex;background:var(--bg3);border:1px solid var(--bd2);border-radius:8px;overflow:hidden}
+.gdt-vbtn{padding:6px 14px;font-family:var(--fh);font-size:10px;font-weight:600;letter-spacing:.3px;border:none;cursor:pointer;background:transparent;color:var(--mu);transition:all .2s;white-space:nowrap}
+.gdt-vbtn.active{background:var(--ac);color:#fff}
+.gdt-stats{display:flex;gap:14px;font-size:11px;color:var(--mu);flex-wrap:wrap;align-items:center}
+.gdt-dc{color:#f87171;font-family:var(--fh);font-weight:700}
+.gdt-ic{color:#4ade80;font-family:var(--fh);font-weight:700}
+.gdt-legend{display:flex;gap:12px;font-size:11px;color:var(--mu);margin-left:auto;flex-wrap:wrap}
+.gdt-li{display:flex;align-items:center;gap:5px}
+.gdt-ld{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+/* Unified */
+.gdt-u{border:1px solid var(--bd);border-radius:10px;overflow:hidden;font-family:'Courier New',Courier,monospace;font-size:12.5px;line-height:1.55}
+.gdt-hunk{border-bottom:1px solid var(--bd)}
+.gdt-hunk:last-child{border-bottom:none}
+.gdt-hh{padding:5px 14px;background:rgba(59,130,246,.06);color:var(--ac);font-size:11px;font-family:var(--fb);border-bottom:1px solid var(--bd)}
+.gdt-ul{display:flex;align-items:stretch;min-height:22px}
+.gdt-ul.del{background:rgba(239,68,68,.09)}
+.gdt-ul.ins{background:rgba(34,197,94,.07)}
+.gdt-ul.eq{background:transparent}
+.gdt-ul.eq:hover{background:rgba(255,255,255,.012)}
+.gdt-lno{width:36px;flex-shrink:0;padding:3px 6px;text-align:right;color:rgba(107,114,128,.7);font-size:10px;border-right:1px solid var(--bd);user-select:none;display:flex;align-items:center;justify-content:flex-end}
+.gdt-lno2{width:36px;flex-shrink:0;padding:3px 6px;text-align:right;color:rgba(107,114,128,.7);font-size:10px;border-right:1px solid var(--bd);user-select:none;display:flex;align-items:center;justify-content:flex-end}
+.gdt-sig{width:20px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:rgba(255,255,255,.15)}
+.gdt-ul.del .gdt-sig{color:#f87171}
+.gdt-ul.ins .gdt-sig{color:#4ade80}
+.gdt-txt{flex:1;padding:3px 10px 3px 4px;white-space:pre-wrap;word-break:break-word;color:#c4c8d4}
+.gdt-ul.del .gdt-txt{color:#fca5a5}
+.gdt-ul.ins .gdt-txt{color:#86efac}
+.gdt-wd{background:rgba(239,68,68,.38);border-radius:2px;padding:0 1px}
+.gdt-wi{background:rgba(34,197,94,.38);border-radius:2px;padding:0 1px}
+/* Split */
+.gdt-sp-wrap{border:1px solid var(--bd);border-radius:10px;overflow:hidden;font-family:'Courier New',Courier,monospace;font-size:12px}
+.gdt-sp-header{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--bd)}
+.gdt-sp-hdr-cell{padding:9px 14px;background:var(--bg3);font-family:var(--fh);font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gdt-sp-hdr-cell:first-child{border-right:1px solid var(--bd)}
+.gdt-sp-body{max-height:620px;overflow-y:auto}
+.gdt-sp-pair{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid rgba(255,255,255,.03)}
+.gdt-sp-pair:last-child{border-bottom:none}
+.gdt-sp-pair:hover .gdt-sp-cell.del,.gdt-sp-pair:hover .gdt-sp-cell.ins,.gdt-sp-pair:hover .gdt-sp-cell.eq{filter:brightness(1.1)}
+.gdt-sp-cell{display:flex;align-items:stretch;min-height:22px}
+.gdt-sp-cell:first-child{border-right:1px solid var(--bd)}
+.gdt-sp-cell.del{background:rgba(239,68,68,.09)}
+.gdt-sp-cell.ins{background:rgba(34,197,94,.07)}
+.gdt-sp-cell.eq{background:transparent}
+.gdt-sp-cell.empty{background:rgba(255,255,255,.015)}
+.gdt-sp-ln{width:32px;flex-shrink:0;padding:3px 5px;text-align:right;color:rgba(107,114,128,.7);font-size:10px;border-right:1px solid var(--bd);user-select:none;display:flex;align-items:center;justify-content:flex-end}
+.gdt-sp-txt{flex:1;padding:3px 8px;white-space:pre-wrap;word-break:break-word;color:#c4c8d4;line-height:1.55}
+.gdt-sp-cell.del .gdt-sp-txt{color:#fca5a5}
+.gdt-sp-cell.ins .gdt-sp-txt{color:#86efac}
+.gdt-sp-cell.empty .gdt-sp-txt,.gdt-sp-cell.empty .gdt-sp-ln{opacity:0}
+.gdt-sep-pair{display:grid;grid-template-columns:1fr 1fr;background:rgba(59,130,246,.06);border-bottom:1px solid var(--bd);border-top:1px solid var(--bd)}
+.gdt-sep-cell{padding:4px 10px;font-size:10px;color:var(--ac);font-family:var(--fb)}
+.gdt-sep-cell:first-child{border-right:1px solid var(--bd)}
+.gdt-nodata{text-align:center;padding:48px;color:var(--mu);font-size:14px}
+.gdt-trunc{text-align:center;padding:10px;font-size:11px;color:var(--yw);background:rgba(234,179,8,.06);border-top:1px solid rgba(234,179,8,.15)}
 </style>
 </head>
 <body>
@@ -271,39 +328,22 @@ header{position:sticky;top:0;z-index:100;background:rgba(10,12,18,.94);backdrop-
   <div class="chips">
     <span class="chip">📄 DOCX / PDF / TXT</span>
     <span class="chip">🔍 Автопоиск по базе</span>
-    <span class="chip">⚡ Diff-фильтр ratio&gt;0.95</span>
-    <span class="chip">💾 SHA-256 кэш</span>
-    <span class="chip">⚖ Иерархия НПА РБ</span>
   </div>
 </div>
 
-<!-- SETTINGS -->
-<div class="card">
-  <div class="card-t">⚙ Настройки</div>
-  <div class="sg">
-    <div class="f">
-      <label>OpenRouter API Key</label>
-      <input type="password" id="api-key" placeholder="sk-or-v1-…" autocomplete="off">
-      <div class="f-note">Получить бесплатно: <a href="https://openrouter.ai/keys" target="_blank">openrouter.ai/keys</a></div>
-    </div>
-    <div class="f">
-      <label>Модель <span class="model-free-badge">FREE</span></label>
-      <select id="model-sel">
-        <option value="openrouter/free">openrouter/free — авто-роутер ⭐</option>
-        <option value="deepseek/deepseek-r1-distill-qwen-14b:free">DeepSeek R1 14B :free 🧠</option>
-        <option value="deepseek/deepseek-r1-0528-qwen3-8b:free">DeepSeek R1 8B :free ⚡</option>
-        <option value="meta-llama/llama-3.2-3b-instruct:free">LLaMA 3.2 3B :free</option>
-        <option value="google/gemma-3-4b-it:free">Gemma 3 4B :free</option>
-        <option value="qwen/qwen3-8b:free">Qwen3 8B :free</option>
-        <option value="mistralai/mistral-7b-instruct:free">Mistral 7B :free</option>
-      </select>
-    </div>
-    <div class="f">
-      <label>Backend URL</label>
-      <input type="text" id="burl" value="">
-      <div class="f-note">Оставьте пустым для автоопределения</div>
-    </div>
-  </div>
+<!-- MODEL SELECTOR (compact) -->
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap">
+  <span style="font-family:var(--fh);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--mu)">Модель</span>
+  <select id="model-sel" style="padding:7px 12px;background:var(--bg3);border:1px solid var(--bd2);border-radius:8px;color:var(--tx);font-family:var(--fb);font-size:13px;outline:none;cursor:pointer">
+    <option value="openrouter/free">openrouter/free — авто-роутер ⭐</option>
+    <option value="deepseek/deepseek-r1-distill-qwen-14b:free">DeepSeek R1 14B :free 🧠</option>
+    <option value="deepseek/deepseek-r1-0528-qwen3-8b:free">DeepSeek R1 8B :free ⚡</option>
+    <option value="meta-llama/llama-3.2-3b-instruct:free">LLaMA 3.2 3B :free</option>
+    <option value="google/gemma-3-4b-it:free">Gemma 3 4B :free</option>
+    <option value="qwen/qwen3-8b:free">Qwen3 8B :free</option>
+    <option value="mistralai/mistral-7b-instruct:free">Mistral 7B :free</option>
+  </select>
+  <span class="model-free-badge">FREE</span>
 </div>
 
 <!-- MODE SWITCHER -->
@@ -425,6 +465,7 @@ header{position:sticky;top:0;z-index:100;background:rgba(10,12,18,.94);backdrop-
   <button class="tb" data-tab="track" onclick="stab(this)">Дорожка</button>
   <button class="tb" data-tab="hier" onclick="stab(this)">Иерархия НПА</button>
   <button class="tb" data-tab="chunks" onclick="stab(this)">Фрагменты</button>
+  <button class="tb" data-tab="gitdiff" onclick="stab(this)">📝 Полный diff</button>
 </div>
 
 <div id="p-changes" class="tp active">
@@ -451,30 +492,126 @@ header{position:sticky;top:0;z-index:100;background:rgba(10,12,18,.94);backdrop-
   <div class="sum" style="margin-bottom:16px"><h3>Анализ по фрагментам</h3><p id="cmeta"></p></div>
   <div class="cg" id="cgrid"></div>
 </div>
+<div id="p-gitdiff" class="tp">
+  <div id="gdt-inner"><div class="gdt-nodata">Запустите анализ — здесь появится полный diff документов</div></div>
+</div>
 </div><!-- /results -->
 
 </div></main>
 
 <!-- PRAVO UPLOAD MODAL -->
 <div class="pravomod" id="pravo-modal">
-  <div class="pravomod-inner">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+  <div class="pravomod-inner" style="max-width:720px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
       <div class="pravomod-title">🗄 База документов pravo.by</div>
       <button class="btn-sm" onclick="closePravoModal()">✕</button>
     </div>
-    <div class="pravomod-sub">Загрузите документы из pravo.by для автоматического поиска. Можно загружать по одному или несколько сразу.</div>
 
-    <div class="pravo-dropzone" id="pravo-drop" ondragover="pravoDov(event)" ondragleave="pravoDlv()" ondrop="pravoDdp(event)">
-      <input type="file" accept=".docx,.pdf,.txt" multiple onchange="pravoOnf(this)">
-      <div style="font-size:28px;margin-bottom:8px">📂</div>
-      <div style="font-family:var(--fh);font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--gr);margin-bottom:4px">Добавить документы НПА</div>
-      <div style="font-size:12px;color:var(--mu)">Перетащите файлы или кликните · .docx .pdf .txt · несколько файлов</div>
+    <!-- Sub-tabs -->
+    <div style="display:flex;gap:3px;background:var(--bg4);border-radius:9px;padding:4px;margin-bottom:18px">
+      <button class="gdt-vbtn active" id="ptab-scrape-btn" onclick="setPTab('scrape')" style="flex:1;padding:8px 12px;border-radius:6px">🌐 Парсер pravo.by</button>
+      <button class="gdt-vbtn" id="ptab-upload-btn" onclick="setPTab('upload')" style="flex:1;padding:8px 12px;border-radius:6px">📂 Загрузить файлы</button>
+      <button class="gdt-vbtn" id="ptab-list-btn" onclick="setPTab('list')" style="flex:1;padding:8px 12px;border-radius:6px">📋 В базе (<span id="pravo-count-badge">…</span>)</button>
     </div>
 
-    <div class="pravo-queue" id="pravo-queue" style="display:none"></div>
+    <!-- TAB: SCRAPER -->
+    <div id="ptab-scrape">
+      <div style="font-size:13px;color:var(--mu);margin-bottom:16px;line-height:1.6">
+        Автоматически скачивает НПА с <b style="color:var(--tx)">pravo.by</b> и сохраняет в базу.
+        Соблюдается задержка между запросами. Парсинг запускается в фоне.
+      </div>
 
-    <div style="font-family:var(--fh);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--mu);margin-bottom:10px">Документы в базе</div>
-    <div id="pravo-list" style="color:var(--mu);font-size:13px">Загрузка…</div>
+      <!-- Scraper form -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+        <div class="f">
+          <label>Категория НПА</label>
+          <select id="sc-category">
+            <option value="laws">Законы</option>
+            <option value="decrees">Декреты Президента</option>
+            <option value="edicts">Указы Президента</option>
+            <option value="resolutions">Постановления Совмина</option>
+            <option value="ministry">НПА министерств</option>
+            <option value="all">Все НПА</option>
+          </select>
+        </div>
+        <div class="f">
+          <label>Ключевое слово (необязательно)</label>
+          <input type="text" id="sc-query" placeholder="трудовой кодекс…">
+        </div>
+        <div class="f">
+          <label>Лимит документов</label>
+          <input type="number" id="sc-limit" value="20" min="1" max="200">
+        </div>
+        <div class="f">
+          <label>Задержка между запросами (сек)</label>
+          <input type="number" id="sc-delay" value="2.0" min="0.5" max="30" step="0.5">
+        </div>
+        <div class="f">
+          <label>Дата от (DD.MM.YYYY)</label>
+          <input type="text" id="sc-date-from" placeholder="01.01.2024">
+        </div>
+        <div class="f">
+          <label>Дата до (DD.MM.YYYY)</label>
+          <input type="text" id="sc-date-to" placeholder="31.12.2024">
+        </div>
+      </div>
+
+      <!-- Direct URLs textarea -->
+      <div class="f" style="margin-bottom:14px">
+        <label>Прямые URL документов (необязательно, по одному на строку)</label>
+        <textarea id="sc-urls" rows="3" placeholder="https://pravo.by/document/?guid=3871&p0=H12300270&#10;https://pravo.by/document/?guid=3871&p0=H11800130"
+          style="width:100%;padding:9px 12px;background:var(--bg);border:1px solid var(--bd2);border-radius:8px;color:var(--tx);font-family:monospace;font-size:12px;resize:vertical;outline:none"></textarea>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-bottom:16px">
+        <button id="sc-start-btn" onclick="startScraping()"
+          style="flex:1;padding:12px;font-family:var(--fh);font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#16a34a,#15803d);border:none;border-radius:10px;cursor:pointer;transition:all .2s">
+          🚀 Запустить парсинг
+        </button>
+        <button id="sc-stop-btn" onclick="stopScraping()" style="display:none;
+          padding:12px 20px;font-family:var(--fh);font-size:12px;font-weight:700;color:var(--rd);background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:10px;cursor:pointer">
+          ⏹ Стоп
+        </button>
+      </div>
+
+      <!-- Progress -->
+      <div id="sc-prog" style="display:none;margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+          <span style="font-size:12px;color:var(--mu)" id="sc-prog-lbl">Запуск…</span>
+          <span style="font-family:var(--fh);font-size:12px;font-weight:700;color:var(--gr)" id="sc-prog-pct">0%</span>
+        </div>
+        <div style="height:4px;background:var(--bg4);border-radius:2px;overflow:hidden;margin-bottom:10px">
+          <div id="sc-prog-fill" style="height:100%;background:linear-gradient(90deg,#16a34a,#22c55e);border-radius:2px;transition:width .5s ease;width:0%"></div>
+        </div>
+        <div id="sc-prog-url" style="font-size:11px;color:var(--mu);font-family:monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:8px"></div>
+      </div>
+
+      <!-- Result -->
+      <div id="sc-result" style="display:none"></div>
+
+      <div style="padding:12px 14px;background:var(--bg4);border-radius:8px;border:1px solid var(--bd);font-size:12px;color:var(--mu);line-height:1.7">
+        <b style="color:var(--tx)">Важно:</b> pravo.by — публичный ресурс. Парсинг выполняется
+        с задержкой (≥2с) для соблюдения нагрузки на сервер. При блокировке увеличьте задержку.
+        Данные доступны бесплатно на <a href="https://pravo.by" target="_blank" style="color:var(--ac)">pravo.by</a>.
+      </div>
+    </div>
+
+    <!-- TAB: UPLOAD -->
+    <div id="ptab-upload" style="display:none">
+      <div class="pravomod-sub" style="margin-bottom:16px">Загрузите уже скачанные документы из pravo.by. Можно несколько файлов сразу.</div>
+      <div class="pravo-dropzone" id="pravo-drop" ondragover="pravoDov(event)" ondragleave="pravoDlv()" ondrop="pravoDdp(event)">
+        <input type="file" accept=".docx,.pdf,.txt" multiple onchange="pravoOnf(this)">
+        <div style="font-size:28px;margin-bottom:8px">📂</div>
+        <div style="font-family:var(--fh);font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--gr);margin-bottom:4px">Добавить документы НПА</div>
+        <div style="font-size:12px;color:var(--mu)">Перетащите файлы или кликните · .docx .pdf .txt · несколько файлов</div>
+      </div>
+      <div class="pravo-queue" id="pravo-queue" style="display:none;margin-top:12px"></div>
+    </div>
+
+    <!-- TAB: LIST -->
+    <div id="ptab-list" style="display:none">
+      <div id="pravo-list" style="color:var(--mu);font-size:13px">Загрузка…</div>
+    </div>
   </div>
 </div>
 
@@ -506,26 +643,27 @@ const HIER=[
 // State
 const S={old:null,new:null,auto:null,result:null,mode:'auto',matchInfo:null};
 
-// ── Backend URL ──────────────────────────────────────────────────────────────
-function burl(){
-  const v=document.getElementById('burl').value.trim();
-  if(v) return v;
-  // auto-detect: same origin in production, localhost in dev
-  if(location.hostname==='localhost'||location.hostname==='127.0.0.1') return 'http://localhost:8000';
-  return '';
-}
+// ── Backend URL — always same origin ─────────────────────────────────────────
+function burl(){ return ''; }
 
 // ── Backend health ───────────────────────────────────────────────────────────
 async function checkBackend(){
   const p=document.getElementById('bpill');
   try{
     const r=await fetch(burl()+'/health',{signal:AbortSignal.timeout(3000)});
-    if(r.ok){p.textContent='⬤ Бэкенд OK';p.className='pill p-green';loadPravoCount();return;}
+    if(r.ok){
+      const d=await r.json();
+      if(d.api_key_configured===false){
+        p.textContent='⬤ Ключ не задан';p.className='pill p-red';
+      } else {
+        p.textContent='⬤ AI готов';p.className='pill p-green';
+      }
+      loadPravoCount();return;
+    }
   }catch{}
-  p.textContent='⬤ Бэкенд offline';p.className='pill p-red';
+  p.textContent='⬤ Offline';p.className='pill p-red';
 }
 checkBackend();
-document.getElementById('burl').addEventListener('change',checkBackend);
 
 // ── Mode ─────────────────────────────────────────────────────────────────────
 function setMode(m){
@@ -600,8 +738,6 @@ function setDot(i,cls,sfx){const d=document.getElementById('dot-'+sfx+'-'+i);if(
 
 // ── Run AUTO ─────────────────────────────────────────────────────────────────
 async function runAuto(){
-  const apiKey=document.getElementById('api-key').value.trim();
-  if(!apiKey){showErr('auto','Введите API-ключ OpenRouter');return;}
   if(!S.auto){showErr('auto','Загрузите документ');return;}
 
   hideErr('auto');
@@ -632,7 +768,6 @@ async function runAuto(){
     const inp=document.querySelector('#card-auto input[type=file]');
     if(!inp.files[0]) throw new Error('Файл не выбран');
     form.append('file',inp.files[0],inp.files[0].name);
-    form.append('apiKey',apiKey);
     form.append('model',model);
 
     setStep('auto',8,'Поиск в базе pravo.by…');
@@ -667,8 +802,6 @@ async function runAuto(){
 
 // ── Run MANUAL ────────────────────────────────────────────────────────────────
 async function runManual(){
-  const apiKey=document.getElementById('api-key').value.trim();
-  if(!apiKey){showErr('manual','Введите API-ключ OpenRouter');return;}
   if(!S.old||!S.new){showErr('manual','Загрузите оба документа');return;}
 
   hideErr('manual');
@@ -697,7 +830,7 @@ async function runManual(){
     const r=await fetch(burl()+'/api/analyze',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({old:S.old,new:S.new,apiKey,model}),
+      body:JSON.stringify({old:S.old,new:S.new,model}),
     });
     const data=await r.json();
     clearInterval(dotTimer);
@@ -754,6 +887,7 @@ function renderAll(r, mode){
   rTrack(r.changes);
   rHier(r.synthesis?.hierarchy_check);
   rChunks(r.metadata,r.chunk_results);
+  rGitDiff(r, mode); // async, fire-and-forget — populates "Полный diff" tab
 }
 
 function rStats(s){
@@ -852,6 +986,268 @@ function rChunks(m,chunkResults){
   grid.innerHTML=items.join('');
 }
 
+// ── Git Diff Engine ───────────────────────────────────────────────────────────
+let _gdtView = 'split';
+
+/* LCS-based diff on arrays. Returns [{type:'eq'|'del'|'ins', val}] */
+function lcsOps(a, b) {
+  const m = a.length, n = b.length;
+  if (m === 0) return b.map(v=>({type:'ins',val:v}));
+  if (n === 0) return a.map(v=>({type:'del',val:v}));
+  // Cap to avoid O(m*n) slowness on huge docs
+  if (m > 1400 || n > 1400) {
+    return [...a.map(v=>({type:'del',val:v})), ...b.map(v=>({type:'ins',val:v}))];
+  }
+  const dp = Array.from({length:m+1}, ()=>new Int32Array(n+1));
+  for (let i=m-1;i>=0;i--)
+    for (let j=n-1;j>=0;j--)
+      dp[i][j] = a[i]===b[j] ? dp[i+1][j+1]+1 : Math.max(dp[i+1][j], dp[i][j+1]);
+  const ops = [];
+  let i=0, j=0;
+  while (i<m || j<n) {
+    if (i<m && j<n && a[i]===b[j]) { ops.push({type:'eq',val:a[i]});i++;j++; }
+    else if (j<n && (i>=m || dp[i+1]?.[j] <= (dp[i]?.[j+1]??0))) { ops.push({type:'ins',val:b[j]});j++; }
+    else { ops.push({type:'del',val:a[i]});i++; }
+  }
+  return ops;
+}
+
+/* Word-level inline diff — returns {oldHtml, newHtml} with highlight spans */
+function wordLcsDiff(oldTxt, newTxt) {
+  if (oldTxt.length + newTxt.length > 1600) return {oldHtml:e(oldTxt), newHtml:e(newTxt)};
+  const ow = oldTxt.split(/(\s+)/);
+  const nw = newTxt.split(/(\s+)/);
+  const ops = lcsOps(ow, nw);
+  let oh='', nh='';
+  for (const op of ops) {
+    const v = e(op.val);
+    if (op.type==='eq')  { oh+=v; nh+=v; }
+    else if (op.type==='del') { oh+=`<span class="gdt-wd">${v}</span>`; }
+    else                      { nh+=`<span class="gdt-wi">${v}</span>`; }
+  }
+  return {oldHtml:oh, newHtml:nh};
+}
+
+/* Group flat diff ops into hunks (changed regions + ctx context lines) */
+function groupOpsIntoHunks(ops, ctx=3) {
+  const lines = [];
+  let oi=1, ni=1;
+  for (const op of ops) {
+    if      (op.type==='eq')  { lines.push({type:'eq', val:op.val, oi, ni}); oi++; ni++; }
+    else if (op.type==='del') { lines.push({type:'del',val:op.val, oi, ni:null}); oi++; }
+    else                      { lines.push({type:'ins',val:op.val, oi:null, ni}); ni++; }
+  }
+  const changed = new Set();
+  for (let i=0;i<lines.length;i++) if (lines[i].type!=='eq') changed.add(i);
+  if (!changed.size) return [];
+  const visible = new Set();
+  for (const ci of changed)
+    for (let k=Math.max(0,ci-ctx);k<=Math.min(lines.length-1,ci+ctx);k++) visible.add(k);
+  const hunks = [];
+  let hunk = null;
+  for (let i=0;i<lines.length;i++) {
+    if (!visible.has(i)) { if (hunk){hunks.push(hunk);hunk=null;} continue; }
+    if (!hunk) hunk = {lines:[], startOi:lines[i].oi||lines[i-1]?.oi||1, startNi:lines[i].ni||lines[i-1]?.ni||1};
+    hunk.lines.push(lines[i]);
+  }
+  if (hunk) hunks.push(hunk);
+  return hunks;
+}
+
+/* Main entry — async so auto mode can fetch old doc paragraphs */
+async function rGitDiff(r, mode) {
+  const panel = document.getElementById('gdt-inner');
+  panel.innerHTML = '<div class="gdt-nodata">⏳ Вычисление diff…</div>';
+
+  let oldParas=[], newParas=[], oldLabel='Старая редакция', newLabel='Новая редакция';
+
+  if (mode === 'manual') {
+    if (S.old?.paragraphs) {
+      oldParas = S.old.paragraphs.slice(0,1500);
+      oldLabel = S.old.filename || oldLabel;
+    } else if (r.old_doc_id) {
+      try {
+        const d = await (await fetch(burl()+'/api/documents/'+r.old_doc_id)).json();
+        oldParas = (d.paragraphs||[]).slice(0,1500);
+        oldLabel = d.filename || oldLabel;
+      } catch{}
+    }
+    if (S.new?.paragraphs) {
+      newParas = S.new.paragraphs.slice(0,1500);
+      newLabel = S.new.filename || newLabel;
+    } else if (r.new_doc_id) {
+      try {
+        const d = await (await fetch(burl()+'/api/documents/'+r.new_doc_id)).json();
+        newParas = (d.paragraphs||[]).slice(0,1500);
+        newLabel = d.filename || newLabel;
+      } catch{}
+    }
+  } else {
+    // auto mode
+    newParas = (S.auto?.paragraphs||[]).slice(0,1500);
+    newLabel = S.auto?.filename || newLabel;
+    oldLabel = r.match?.title || r.match?.filename || 'Документ из базы pravo.by';
+    if (r.match?.doc_id) {
+      try {
+        const d = await (await fetch(burl()+'/api/documents/'+r.match.doc_id)).json();
+        oldParas = (d.paragraphs||[]).slice(0,1500);
+      } catch{}
+    }
+  }
+
+  if (!oldParas.length && !newParas.length) {
+    panel.innerHTML = '<div class="gdt-nodata">⚠ Нет текстовых данных для отображения</div>';
+    return;
+  }
+
+  const truncated = oldParas.length===1500 || newParas.length===1500;
+  const ops   = lcsOps(oldParas, newParas);
+  const hunks = groupOpsIntoHunks(ops, 3);
+  const delCount = ops.filter(o=>o.type==='del').length;
+  const insCount = ops.filter(o=>o.type==='ins').length;
+  const eqCount  = ops.filter(o=>o.type==='eq').length;
+
+  // Stash for view toggle
+  S._gdt = {ops, hunks, oldLabel, newLabel, stats:{delCount,insCount,eqCount}, truncated};
+  _gdtRender();
+}
+
+function _gdtRender() {
+  const panel = document.getElementById('gdt-inner');
+  if (!S._gdt) return;
+  const {hunks, oldLabel, newLabel, stats:{delCount,insCount,eqCount}, truncated} = S._gdt;
+
+  const toolbar = `<div class="gdt-toolbar">
+    <div class="gdt-vt">
+      <button class="gdt-vbtn ${_gdtView==='split'?'active':''}" onclick="setGdtView('split')">⬛⬜ Split</button>
+      <button class="gdt-vbtn ${_gdtView==='unified'?'active':''}" onclick="setGdtView('unified')">☰ Unified</button>
+    </div>
+    <div class="gdt-stats">
+      <span><span class="gdt-dc">−${delCount}</span> строк удалено</span>
+      <span><span class="gdt-ic">+${insCount}</span> строк добавлено</span>
+      <span>${eqCount} без изменений</span>
+    </div>
+    <div class="gdt-legend">
+      <span class="gdt-li"><span class="gdt-ld" style="background:rgba(239,68,68,.45)"></span>Удалено</span>
+      <span class="gdt-li"><span class="gdt-ld" style="background:rgba(34,197,94,.4)"></span>Добавлено</span>
+      <span class="gdt-li"><span class="gdt-ld" style="background:rgba(234,179,8,.35)"></span>Изменено</span>
+    </div>
+  </div>`;
+
+  if (!hunks.length) {
+    panel.innerHTML = toolbar + '<div class="gdt-nodata">✅ Документы идентичны — изменений не обнаружено</div>';
+    return;
+  }
+
+  const truncNotice = truncated
+    ? '<div class="gdt-trunc">⚠ Документ обрезан до 1500 строк для производительности</div>' : '';
+
+  const body = _gdtView==='unified'
+    ? _gdtUnified(hunks)
+    : _gdtSplit(hunks, oldLabel, newLabel);
+
+  panel.innerHTML = toolbar + body + truncNotice;
+}
+
+function setGdtView(v) { _gdtView=v; _gdtRender(); }
+
+/* ── Unified view ── */
+function _gdtUnified(hunks) {
+  let html = '<div class="gdt-u">';
+  for (const hunk of hunks) {
+    const dels = hunk.lines.filter(l=>l.type==='del').length;
+    const ins  = hunk.lines.filter(l=>l.type==='ins').length;
+    html += `<div class="gdt-hunk">
+      <div class="gdt-hh">@@ −${hunk.startOi} +${hunk.startNi} @@
+        <span style="color:var(--mu);margin-left:10px">${dels} удалено · ${ins} добавлено</span>
+      </div>`;
+    const lines = hunk.lines;
+    let i = 0;
+    while (i < lines.length) {
+      const l = lines[i];
+      if (l.type==='eq') {
+        html += _gdtULine('eq', l.oi, l.ni, e(l.val));
+        i++;
+      } else {
+        const dBlock=[], iBlock=[];
+        while (i<lines.length && lines[i].type==='del') { dBlock.push(lines[i]); i++; }
+        while (i<lines.length && lines[i].type==='ins') { iBlock.push(lines[i]); i++; }
+        if (dBlock.length===iBlock.length) {
+          for (let k=0;k<dBlock.length;k++) {
+            const {oldHtml,newHtml} = wordLcsDiff(dBlock[k].val||'', iBlock[k].val||'');
+            html += _gdtULine('del', dBlock[k].oi, null, oldHtml);
+            html += _gdtULine('ins', null, iBlock[k].ni, newHtml);
+          }
+        } else {
+          for (const d of dBlock) html += _gdtULine('del', d.oi, null, e(d.val));
+          for (const il of iBlock) html += _gdtULine('ins', null, il.ni, e(il.val));
+        }
+      }
+    }
+    html += '</div>';
+  }
+  return html + '</div>';
+}
+
+function _gdtULine(type, oi, ni, htm) {
+  const sig = type==='del'?'−':type==='ins'?'+':' ';
+  return `<div class="gdt-ul ${type}">
+    <div class="gdt-lno">${oi??''}</div>
+    <div class="gdt-lno2">${ni??''}</div>
+    <div class="gdt-sig">${sig}</div>
+    <div class="gdt-txt">${htm}</div>
+  </div>`;
+}
+
+/* ── Split view ── */
+function _gdtSplit(hunks, oldLabel, newLabel) {
+  let pairs = '';
+  for (const hunk of hunks) {
+    pairs += `<div class="gdt-sep-pair">
+      <div class="gdt-sep-cell">@@ −${hunk.startOi} @@</div>
+      <div class="gdt-sep-cell">@@ +${hunk.startNi} @@</div>
+    </div>`;
+    const lines = hunk.lines;
+    let i=0;
+    while (i<lines.length) {
+      const l = lines[i];
+      if (l.type==='eq') {
+        const t=e(l.val);
+        pairs += _gdtPair(_gdtCell('eq',l.oi,t), _gdtCell('eq',l.ni,t));
+        i++;
+      } else {
+        const dBlock=[], iBlock=[];
+        while (i<lines.length && lines[i].type==='del') { dBlock.push(lines[i]); i++; }
+        while (i<lines.length && lines[i].type==='ins') { iBlock.push(lines[i]); i++; }
+        const maxLen = Math.max(dBlock.length, iBlock.length);
+        for (let k=0;k<maxLen;k++) {
+          const dl=dBlock[k], il=iBlock[k];
+          if (dl&&il) {
+            const {oldHtml,newHtml} = wordLcsDiff(dl.val||'', il.val||'');
+            pairs += _gdtPair(_gdtCell('del',dl.oi,oldHtml), _gdtCell('ins',il.ni,newHtml));
+          } else if (dl) {
+            pairs += _gdtPair(_gdtCell('del',dl.oi,e(dl.val)), _gdtCell('empty','',''));
+          } else {
+            pairs += _gdtPair(_gdtCell('empty','',''), _gdtCell('ins',il.ni,e(il.val)));
+          }
+        }
+      }
+    }
+  }
+  return `<div class="gdt-sp-wrap">
+    <div class="gdt-sp-header">
+      <div class="gdt-sp-hdr-cell" title="${e(oldLabel)}">${e(oldLabel)}</div>
+      <div class="gdt-sp-hdr-cell" title="${e(newLabel)}">${e(newLabel)}</div>
+    </div>
+    <div class="gdt-sp-body">${pairs}</div>
+  </div>`;
+}
+
+function _gdtPair(l, r) { return `<div class="gdt-sp-pair">${l}${r}</div>`; }
+function _gdtCell(type, ln, htm) {
+  return `<div class="gdt-sp-cell ${type}"><div class="gdt-sp-ln">${ln??''}</div><div class="gdt-sp-txt">${htm}</div></div>`;
+}
+
 // ── UI helpers ────────────────────────────────────────────────────────────────
 function stab(btn){
   document.querySelectorAll('.tb').forEach(b=>b.classList.remove('active'));
@@ -890,24 +1286,39 @@ function rb(l){const labels={green:'Безопасно',yellow:'Проверит
 function e(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
 // ── Pravo Modal ───────────────────────────────────────────────────────────────
+let _scPollTimer = null;
+
 function openPravoModal(){
   document.getElementById('pravo-modal').classList.add('open');
   loadPravoList();
+  loadPravoCount();
+  // Resume polling if job was running
+  if(_scPollTimer) clearInterval(_scPollTimer);
+  _pollScrapeStatus();
 }
 function closePravoModal(){
   document.getElementById('pravo-modal').classList.remove('open');
   loadPravoCount();
 }
 
-function pravoDov(e){e.preventDefault();document.getElementById('pravo-drop').classList.add('drag');}
+// Sub-tab switcher
+function setPTab(tab) {
+  ['scrape','upload','list'].forEach(t=>{
+    document.getElementById('ptab-'+t).style.display = t===tab?'block':'none';
+    const btn = document.getElementById('ptab-'+t+'-btn');
+    if(btn) btn.classList.toggle('active', t===tab);
+  });
+  if(tab==='list') loadPravoList();
+}
+
+function pravoDov(ev){ev.preventDefault();document.getElementById('pravo-drop').classList.add('drag');}
 function pravoDlv(){document.getElementById('pravo-drop').classList.remove('drag');}
-function pravoDdp(e){e.preventDefault();pravoDlv();const files=[...e.dataTransfer.files];if(files.length)uploadPravoBatch(files);}
+function pravoDdp(ev){ev.preventDefault();pravoDlv();const files=[...ev.dataTransfer.files];if(files.length)uploadPravoBatch(files);}
 function pravoOnf(inp){if(inp.files.length)uploadPravoBatch([...inp.files]);}
 
 async function uploadPravoBatch(files){
   const queue=document.getElementById('pravo-queue');
   queue.style.display='block';
-  const apiKey=document.getElementById('api-key').value.trim();
 
   for(const file of files){
     const item=document.createElement('div');
@@ -930,16 +1341,121 @@ async function uploadPravoBatch(files){
     }
   }
   loadPravoList();
+  loadPravoCount();
+}
+
+// ── Scraper UI ───────────────────────────────────────────────────────────────
+async function startScraping() {
+  const category  = document.getElementById('sc-category').value;
+  const query     = document.getElementById('sc-query').value.trim();
+  const limit     = parseInt(document.getElementById('sc-limit').value)||20;
+  const delay     = parseFloat(document.getElementById('sc-delay').value)||2.0;
+  const dateFrom  = document.getElementById('sc-date-from').value.trim();
+  const dateTo    = document.getElementById('sc-date-to').value.trim();
+  const urlsRaw   = document.getElementById('sc-urls').value.trim();
+  const urls      = urlsRaw ? urlsRaw.split('\n').map(u=>u.trim()).filter(Boolean) : [];
+
+  if (!urls.length && !query && category==='all') {
+    alert('Укажите категорию, ключевое слово или прямые URL'); return;
+  }
+
+  document.getElementById('sc-start-btn').style.display='none';
+  document.getElementById('sc-stop-btn').style.display='inline-flex';
+  document.getElementById('sc-prog').style.display='block';
+  document.getElementById('sc-result').style.display='none';
+  _scSetProg(0, 'Запуск парсинга…');
+
+  try {
+    const r = await fetch(burl()+'/api/scrape', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({urls, query, category, limit, delay,
+                            date_from: dateFrom, date_to: dateTo, pages: 3}),
+    });
+    const d = await r.json();
+    if (!r.ok) {
+      _scSetProg(0, '');
+      _scShowResult({error: d.error||'HTTP '+r.status});
+      _scResetBtns(); return;
+    }
+    // Start polling
+    _scPollTimer = setInterval(_pollScrapeStatus, 1200);
+  } catch(err) {
+    _scSetProg(0,'');
+    _scShowResult({error: err.message});
+    _scResetBtns();
+  }
+}
+
+async function stopScraping() {
+  await fetch(burl()+'/api/scrape/stop', {method:'POST'});
+}
+
+async function _pollScrapeStatus() {
+  try {
+    const r = await fetch(burl()+'/api/scrape/status');
+    const d = await r.json();
+    const pct = d.total>0 ? Math.round(100*d.progress/d.total) : (d.running?5:100);
+    _scSetProg(pct, d.running
+      ? `Обрабатываю ${d.progress}/${d.total||'?'}…`
+      : d.result ? `Готово: ${d.result.saved} сохранено` : 'Завершено');
+    if (d.current_url) {
+      document.getElementById('sc-prog-url').textContent = d.current_url;
+    }
+    if (!d.running) {
+      clearInterval(_scPollTimer); _scPollTimer=null;
+      _scShowResult(d.result||{error:d.error||'Нет данных'});
+      _scResetBtns();
+      loadPravoList(); loadPravoCount();
+    }
+  } catch{}
+}
+
+function _scSetProg(pct, msg) {
+  document.getElementById('sc-prog-fill').style.width = pct+'%';
+  document.getElementById('sc-prog-pct').textContent = pct+'%';
+  document.getElementById('sc-prog-lbl').textContent = msg;
+}
+
+function _scResetBtns() {
+  document.getElementById('sc-start-btn').style.display='inline-flex';
+  document.getElementById('sc-stop-btn').style.display='none';
+}
+
+function _scShowResult(res) {
+  const el = document.getElementById('sc-result');
+  el.style.display = 'block';
+  if (res.error) {
+    el.innerHTML=`<div style="padding:12px 14px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:8px;color:#fca5a5;font-size:13px;margin-bottom:12px">
+      ⚠ ${e(res.error)}
+    </div>`;
+    return;
+  }
+  const docs = (res.docs||[]).slice(0,10);
+  el.innerHTML=`
+    <div style="padding:14px 16px;background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.25);border-radius:10px;margin-bottom:14px">
+      <div style="display:flex;gap:24px;flex-wrap:wrap;font-size:13px">
+        <span>✅ <b style="color:var(--gr)">${res.saved}</b> сохранено</span>
+        <span>✗ <b style="color:var(--rd)">${res.failed}</b> ошибок</span>
+        <span>○ <b style="color:var(--mu)">${res.skipped}</b> пропущено</span>
+        <span>Всего URL: <b>${res.total}</b></span>
+      </div>
+      ${docs.length?`<div style="margin-top:10px;font-size:11px;color:var(--mu)">${docs.map(d=>`<div style="padding:3px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">✓ ${e(d.title||d.url)} <span style="color:var(--mu)">(${((d.chars||0)/1000).toFixed(1)}k)</span></div>`).join('')}${res.docs?.length>10?`<div style="color:var(--mu)">…ещё ${res.docs.length-10}</div>`:''}</div>`:''}
+    </div>`;
 }
 
 async function loadPravoList(){
   const el=document.getElementById('pravo-list');
+  if(!el) return;
   el.innerHTML='<div style="color:var(--mu);font-size:13px">Загрузка…</div>';
   try{
     const r=await fetch(burl()+'/api/pravo-docs');
     const d=await r.json();
+    // Update badge
+    const badge = document.getElementById('pravo-count-badge');
+    if(badge) badge.textContent = d.count||0;
     if(!d.documents?.length){
-      el.innerHTML='<div style="color:var(--mu);font-size:13px;padding:10px 0">База пуста. Загрузите документы выше.</div>';
+      el.innerHTML='<div style="color:var(--mu);font-size:13px;padding:10px 0">База пуста. Используйте парсер или загрузите файлы.</div>';
       return;
     }
     el.innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:12px">
@@ -951,8 +1467,8 @@ async function loadPravoList(){
       </tr></thead>
       <tbody>${d.documents.map(doc=>`
         <tr>
-          <td style="padding:8px 10px;color:var(--tx)">${e(doc.title||doc.filename)}</td>
-          <td style="padding:8px 10px;color:var(--mu)">${(doc.char_count/1000).toFixed(1)}k симв.</td>
+          <td style="padding:8px 10px;color:var(--tx);max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${e(doc.title||doc.filename)}">${e(doc.title||doc.filename)}</td>
+          <td style="padding:8px 10px;color:var(--mu)">${(doc.char_count/1000).toFixed(1)}k</td>
           <td style="padding:8px 10px;color:var(--mu)">${new Date(doc.created_at*1000).toLocaleDateString('ru')}</td>
           <td style="padding:8px 10px">
             <button onclick="deletePravoDoc('${doc.id}')" style="font-size:11px;padding:3px 8px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--rd);border-radius:5px;cursor:pointer">✕</button>
@@ -965,7 +1481,7 @@ async function loadPravoList(){
 async function deletePravoDoc(docId){
   if(!confirm('Удалить документ из базы?')) return;
   await fetch(burl()+'/api/documents/'+docId,{method:'DELETE'});
-  loadPravoList();
+  loadPravoList(); loadPravoCount();
 }
 
 // ── Export ────────────────────────────────────────────────────────────────────

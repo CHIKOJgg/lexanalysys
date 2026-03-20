@@ -4,9 +4,11 @@
 # New in v3:
 #   POST /api/analyze-auto   — upload 1 doc, auto-match from pravo DB
 #   POST /api/upload-pravo   — seed DB with pravo.by documents
+#   POST /api/scrape         — scrape pravo.by and seed DB (background)
+#   GET  /api/scrape/status  — scraping job status
 
 from __future__ import annotations
-import json, logging, os, sys, traceback
+import json, logging, os, sys, traceback, threading
 from flask import Flask, Response, jsonify, request, send_from_directory
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -19,6 +21,34 @@ from backend.db.database import (
     save_analysis, get_analysis, list_analyses, search_similar_document,
     _doc_id, _conn,
 )
+
+# Scraper (optional — graceful fallback if not installed)
+try:
+    from backend.scraper.pravo_scraper import PravoScraper, CATEGORIES, build_search_url
+    _SCRAPER_AVAILABLE = True
+except ImportError:
+    _SCRAPER_AVAILABLE = False
+
+# ── API key — читается ТОЛЬКО из окружения, никогда из запроса ───────────────
+def _get_api_key() -> str:
+    key = os.environ.get("OPENROUTER_API_KEY", "").strip()
+    if not key:
+        raise RuntimeError(
+            "OPENROUTER_API_KEY не задан. Добавьте в .env файл."
+        )
+    return key
+
+# ── Scraping job state (in-memory, single-worker) ────────────────────────────
+_scrape_job: dict = {
+    "running": False,
+    "progress": 0,
+    "total": 0,
+    "current_url": "",
+    "result": None,
+    "error": "",
+    "started_at": 0,
+    "finished_at": 0,
+}
 
 # Logging setup
 logging.basicConfig(
@@ -83,6 +113,7 @@ def health():
             "status": "ok",
             "version": "3.0.0",
             "database": "connected",
+            "api_key_configured": bool(os.environ.get("OPENROUTER_API_KEY", "").strip()),
             "frontend_path": _FRONTEND,
             "index_exists": os.path.exists(os.path.join(_FRONTEND, "index.html"))
         })
@@ -178,19 +209,21 @@ def api_analyze():
     body = request.get_json(silent=True) or {}
     old_parsed = body.get("old")
     new_parsed  = body.get("new")
-    api_key    = (body.get("apiKey") or "").strip()
     model      = body.get("model") or None
 
     if not isinstance(old_parsed, dict):
         return jsonify({"error": "Field 'old' required (parsed document)"}), 400
     if not isinstance(new_parsed, dict):
         return jsonify({"error": "Field 'new' required (parsed document)"}), 400
-    if not api_key:
-        return jsonify({"error": "Field 'apiKey' required"}), 400
     if not old_parsed.get("paragraphs"):
         return jsonify({"error": "'old' document has no text"}), 400
     if not new_parsed.get("paragraphs"):
         return jsonify({"error": "'new' document has no text"}), 400
+
+    try:
+        api_key = _get_api_key()
+    except RuntimeError as exc:
+        return jsonify({"error": str(exc)}), 503
 
     if not old_parsed.get("chunks"):
         old_parsed["chunks"] = build_chunks(old_parsed["paragraphs"])
@@ -249,11 +282,12 @@ def api_analyze_auto():
     if request.method == "OPTIONS":
         return jsonify({}), 204
 
-    api_key = (request.form.get("apiKey") or "").strip()
-    model   = (request.form.get("model") or "").strip() or None
+    model = (request.form.get("model") or "").strip() or None
 
-    if not api_key:
-        return jsonify({"error": "Field 'apiKey' required"}), 400
+    try:
+        api_key = _get_api_key()
+    except RuntimeError as exc:
+        return jsonify({"error": str(exc)}), 503
 
     if "file" not in request.files:
         return jsonify({"error": "No 'file' field"}), 400
@@ -483,6 +517,138 @@ def api_get_analysis(analysis_id: str):
     for f in ("changes", "red_zones", "stats", "metadata", "synthesis"):
         d[f] = json.loads(d[f]) if d.get(f) else {}
     return jsonify(d)
+
+
+# ─── Scraper API ──────────────────────────────────────────────────────────────
+
+@app.get("/api/scraper/categories")
+def api_scraper_categories():
+    """Return available scraping categories."""
+    if not _SCRAPER_AVAILABLE:
+        return jsonify({"error": "Scraper not available. Install requests+beautifulsoup4."}), 503
+    return jsonify({
+        "categories": [
+            {"id": k, "label": v["label"]} for k, v in CATEGORIES.items()
+        ]
+    })
+
+
+@app.route("/api/scrape", methods=["POST", "OPTIONS"])
+def api_scrape():
+    """
+    Start a background scraping job.
+
+    Body (JSON):
+        urls      list[str]  — direct document URLs (optional)
+        query     str        — search query (optional)
+        category  str        — "laws"|"decrees"|"edicts"|"resolutions"|"ministry"|"all"
+        limit     int        — max documents (default 20)
+        pages     int        — max list pages (default 3)
+        delay     float      — seconds between requests (default 2.0)
+        date_from str        — DD.MM.YYYY
+        date_to   str        — DD.MM.YYYY
+    """
+    global _scrape_job
+
+    if request.method == "OPTIONS":
+        return jsonify({}), 204
+
+    if not _SCRAPER_AVAILABLE:
+        return jsonify({
+            "error": "Scraper module not available. "
+                     "Run: pip install requests beautifulsoup4 lxml"
+        }), 503
+
+    if _scrape_job["running"]:
+        return jsonify({
+            "error": "A scraping job is already running",
+            "status": _scrape_job,
+        }), 409
+
+    body     = request.get_json(silent=True) or {}
+    urls     = body.get("urls") or []
+    query    = (body.get("query") or "").strip()
+    category = body.get("category", "all")
+    limit    = min(int(body.get("limit", 20)), 200)
+    pages    = min(int(body.get("pages", 3)), 10)
+    delay    = max(float(body.get("delay", 2.0)), 0.5)
+    date_from = body.get("date_from", "")
+    date_to   = body.get("date_to", "")
+
+    if not urls and not query and category == "all":
+        return jsonify({"error": "Provide 'urls', 'query', or 'category'"}), 400
+
+    import time as _time
+    _scrape_job = {
+        "running": True,
+        "progress": 0,
+        "total": len(urls) if urls else 0,
+        "current_url": "",
+        "result": None,
+        "error": "",
+        "started_at": int(_time.time()),
+        "finished_at": 0,
+    }
+
+    def _run():
+        global _scrape_job
+        import time as _time
+        try:
+            scraper = PravoScraper(
+                delay   = delay,
+                timeout = 20,
+                retries = 3,
+                db_path = os.environ.get("DB_PATH"),
+            )
+
+            def on_progress(i, total, url):
+                global _scrape_job
+                _scrape_job["progress"]    = i + 1
+                _scrape_job["total"]       = total
+                _scrape_job["current_url"] = url
+                logger.info("Scraping [%d/%d]: %s", i+1, total, url[:80])
+
+            result = scraper.run(
+                urls      = urls or None,
+                query     = query,
+                category  = category,
+                max_docs  = limit,
+                max_pages = pages,
+                date_from = date_from,
+                date_to   = date_to,
+                on_progress = on_progress,
+            )
+            _scrape_job["result"] = result
+            logger.info("Scrape done: saved=%d failed=%d", result["saved"], result["failed"])
+        except Exception as exc:
+            logger.error("Scrape job error: %s\n%s", exc, traceback.format_exc())
+            _scrape_job["error"] = str(exc)
+        finally:
+            _scrape_job["running"]     = False
+            _scrape_job["finished_at"] = int(_time.time())
+
+    t = threading.Thread(target=_run, daemon=True)
+    t.start()
+
+    return jsonify({"started": True, "status": _scrape_job})
+
+
+@app.get("/api/scrape/status")
+def api_scrape_status():
+    """Poll scraping job status."""
+    return jsonify(_scrape_job)
+
+
+@app.route("/api/scrape/stop", methods=["POST", "OPTIONS"])
+def api_scrape_stop():
+    """Mark job as stopped (graceful — current doc finishes)."""
+    global _scrape_job
+    if request.method == "OPTIONS":
+        return jsonify({}), 204
+    if _scrape_job["running"]:
+        _scrape_job["error"] = "Stopped by user"
+        _scrape_job["running"] = False
+    return jsonify({"stopped": True})
 
 
 # ─── Entry ────────────────────────────────────────────────────────────────────
