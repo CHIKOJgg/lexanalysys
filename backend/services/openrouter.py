@@ -20,11 +20,7 @@ OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 # openrouter/free is tried FIRST -- it picks any available free model automatically
 # Specific models are fallback in case the router itself rate-limits
 FREE_MODELS = [
-    "openrouter/free",  # auto-router (recommended)
-    "deepseek/deepseek-r1-distill-qwen-14b:free",
-    "deepseek/deepseek-r1-distill-llama-8b:free",
-    "meta-llama/llama-3.2-3b-instruct:free",
-    "google/gemma-2-9b-it:free",
+    "openrouter/free"  # auto-router (recommended
 ]
 
 _TIMEOUT = 90  # seconds per request (increased from 60)
